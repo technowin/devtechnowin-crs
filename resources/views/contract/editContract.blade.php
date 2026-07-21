@@ -21,7 +21,7 @@
                 <li role="presentation"><a href="#equipment-tab" role="tab" id="equipment" data-toggle="tab" aria-expanded="false">Equipment</a></li>
                  <li role="presentation"><a href="#equipment-upload-tab" role="tab" id="equipment-upload" data-toggle="tab" aria-expanded="false">Equipment Upload</a></li>
                 <li role="presentation"><a href="#billing-tab" role="tab" id="billing-details" data-toggle="tab" aria-expanded="false">Billing Details</a></li>
-
+                <li role="presentation"><a href="#payment-details-tab" role="tab" id="payment-details" data-toggle="tab" aria-expanded="false">Payment Details New</a></li>
                  <li role="presentation"><a href="#payment-term-tab" role="tab" id="paymentterms" data-toggle="tab" aria-expanded="false">Payment Terms</a></li>
             </ul>
             <br>
@@ -1070,6 +1070,181 @@
 
 
 
+
+<div class="tab-pane fade" role="tabpanel" id="payment-details-tab" style="margin-left: 250px;">
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Payment Details New</h3>
+            </div>
+            <div class="panel-body">
+                {{Form::open(array('action' => 'ContractController@addPaymentDetails','method' => 'post', 'id' => 'paymentDetailsForm', 'files' => true))}}
+                {{ Form::hidden('contractno', $editconract->contractno, array('id' => 'paymentdetailscontractid')) }}
+
+                <h5 class="text-primary">Form Fees</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('formfeesamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-2" style="padding-top:8px;">
+                        {{ Form::radio('formfeesexemption', 'Y', false, array('id'=>'e_formfeesexemptionY')) }} <label for="e_formfeesexemptionY">Y</label>
+                        &nbsp;&nbsp;
+                        {{ Form::radio('formfeesexemption', 'N', false, array('id'=>'e_formfeesexemptionN')) }} <label for="e_formfeesexemptionN">N</label>
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('formfeesdatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">EMD</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('emdamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-2" style="padding-top:8px;">
+                        {{ Form::radio('emdexemption', 'Y', false, array('id'=>'e_emdexemptionY')) }} <label for="e_emdexemptionY">Y</label>
+                        &nbsp;&nbsp;
+                        {{ Form::radio('emdexemption', 'N', false, array('id'=>'e_emdexemptionN')) }} <label for="e_emdexemptionN">N</label>
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('emddatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Estimated Return Date</label>
+                    <div class="col-sm-2">{{ Form::date('emdestimatedreturndate', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Return Amount</label>
+                    <div class="col-sm-2">{{ Form::text('emdreturnamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Return Date</label>
+                    <div class="col-sm-2">{{ Form::date('emdreturndate', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Security Deposit</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('securitydepositamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Type</label>
+                    <div class="col-sm-2">
+                        {{ Form::select('securitydeposittype', ['' => '--','Bank Guarantee'=>'Bank Guarantee','EMD'=>'EMD','Deposit'=>'Deposit'], null, array('class' => 'form-control form-control-sm')) }}
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('securitydepositdatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Estimated Return Date</label>
+                    <div class="col-sm-2">{{ Form::date('securitydepositestimatedreturndate', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Return Amount</label>
+                    <div class="col-sm-2">{{ Form::text('securitydepositreturnamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Return Date</label>
+                    <div class="col-sm-2">{{ Form::date('securitydepositreturndate', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Admin Charges</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('adminchargesamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-2" style="padding-top:8px;">
+                        {{ Form::radio('adminchargesexemption', 'Y', false, array('id'=>'e_adminchargesexemptionY')) }} <label for="e_adminchargesexemptionY">Y</label>
+                        &nbsp;&nbsp;
+                        {{ Form::radio('adminchargesexemption', 'N', false, array('id'=>'e_adminchargesexemptionN')) }} <label for="e_adminchargesexemptionN">N</label>
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('adminchargesdatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Facility Charges</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('facilitychargesamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-2" style="padding-top:8px;">
+                        {{ Form::radio('facilitychargesexemption', 'Y', false, array('id'=>'e_facilitychargesexemptionY')) }} <label for="e_facilitychargesexemptionY">Y</label>
+                        &nbsp;&nbsp;
+                        {{ Form::radio('facilitychargesexemption', 'N', false, array('id'=>'e_facilitychargesexemptionN')) }} <label for="e_facilitychargesexemptionN">N</label>
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('facilitychargesdatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Legal Charges</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('legalchargesamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-2" style="padding-top:8px;">
+                        {{ Form::radio('legalchargesexemption', 'Y', false, array('id'=>'e_legalchargesexemptionY')) }} <label for="e_legalchargesexemptionY">Y</label>
+                        &nbsp;&nbsp;
+                        {{ Form::radio('legalchargesexemption', 'N', false, array('id'=>'e_legalchargesexemptionN')) }} <label for="e_legalchargesexemptionN">N</label>
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('legalchargesdatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Additional Security Deposit</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-2">{{ Form::text('addnlsecuritydepositamount', null, array('class' => 'form-control form-control-sm')) }}</div>
+                    <label class="col-sm-2 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-2" style="padding-top:8px;">
+                        {{ Form::radio('addnlsecuritydepositexemption', 'Y', false, array('id'=>'e_addnlsecuritydepositexemptionY')) }} <label for="e_addnlsecuritydepositexemptionY">Y</label>
+                        &nbsp;&nbsp;
+                        {{ Form::radio('addnlsecuritydepositexemption', 'N', false, array('id'=>'e_addnlsecuritydepositexemptionN')) }} <label for="e_addnlsecuritydepositexemptionN">N</label>
+                    </div>
+                    <label class="col-sm-2 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-2">{{ Form::date('addnlsecuritydepositdatepaid', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-2 col-form-label text-muted">Refund Date</label>
+                    <div class="col-sm-2">{{ Form::date('addnlsecuritydepositrefunddate', null, array('class' => 'form-control form-control-sm','max'=>'2050-12-31')) }}</div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Documents</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Document 1 (e.g. Acceptance Letter)</label>
+                    <div class="col-sm-6">
+                        <input type="file" name="doc1" id="e_doc1id" class="form-control form-control-sm">
+                        <div id="e_doc1existing"></div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Document 2</label>
+                    <div class="col-sm-6">
+                        <input type="file" name="doc2" id="e_doc2id" class="form-control form-control-sm">
+                        <div id="e_doc2existing"></div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Document 3</label>
+                    <div class="col-sm-6">
+                        <input type="file" name="doc3" id="e_doc3id" class="form-control form-control-sm">
+                        <div id="e_doc3existing"></div>
+                    </div>
+                </div>
+
+                <br/>
+                <div class="row">
+                    <label class="col-sm-3 col-form-label-sm text-muted"></label>
+                    <div class="col-sm-6">
+                        {{ Form::submit('Save & Close', array('class' => 'btn btn-primary','id' => 'paymentdetailssubmitbtn')) }}
+                        <a class="btn btn-primary" href="{{url()->previous()}}">Cancel</a>
+                    </div>
+                </div>
+                {{ Form::close() }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
                 <div class="tab-pane fade" role="tabpanel" id="payment-term-tab" aria-labelledby="paymentterms">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -1363,6 +1538,172 @@
 @section('page-script')
     <script src="{{asset('custom-scripts/customdatavalidation.js')}}"></script>
 
+<script type="text/javascript">
+function updatePaymentDocDisplay(docField, filePath, contractno, targetSelector) {
+    if (!filePath) {
+        $(targetSelector).empty();
+        return;
+    }
+
+    var fileName = filePath.split('/').pop();
+    var shortName = fileName.length > 35 ? fileName.substring(0, 32) + '...' : fileName;
+    var fileExtension = fileName.split('.').pop().toLowerCase();
+    var isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    var viewUrl = '{{ url("view-payment-document") }}/' + contractno + '/' + docField;
+    var downloadUrl = '{{ url("download-payment-document") }}/' + contractno + '/' + docField;
+
+    var fileIcon = '';
+    if (fileExtension === 'pdf') {
+        fileIcon = '<i class="glyphicon glyphicon-file" style="color: #d9534f;"></i> ';
+    } else if (isImage) {
+        fileIcon = '<i class="glyphicon glyphicon-picture" style="color: #5bc0de;"></i> ';
+    } else {
+        fileIcon = '<i class="glyphicon glyphicon-file" style="color: #f0ad4e;"></i> ';
+    }
+
+    var html = '<small>' + fileIcon +
+        '<a href="' + viewUrl + '" target="_blank">' + shortName + '</a> ' +
+        '<a href="' + downloadUrl + '" class="btn btn-success btn-xs" title="Download">' +
+        '<i class="glyphicon glyphicon-download-alt"></i></a> ' +
+        '<button type="button" class="btn btn-danger btn-xs" onclick="deletePaymentDocument(\'' + docField + '\', \'' + contractno + '\', \'' + targetSelector + '\')" title="Delete">' +
+        '<i class="glyphicon glyphicon-trash"></i></button></small>';
+
+    $(targetSelector).html(html);
+}
+
+function deletePaymentDocument(docField, contractno, targetSelector) {
+    if (!confirm('Are you sure you want to remove this document?')) return;
+
+    $.ajax({
+        url: '{{ url("delete-payment-document") }}',
+        type: 'POST',
+        data: {
+            contractno: contractno,
+            doc_field: docField,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                $(targetSelector).empty();
+            } else {
+                alert('Failed to remove document: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Error removing document');
+        }
+    });
+}
+</script>
+
+    <script type="text/javascript">
+function loadPaymentDetailsEdit(contractno) {
+    $.ajax({
+        url: '{{ url("getpaymentdetails") }}/' + contractno,
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            if (data.paymentdetails) {
+                var pd = data.paymentdetails;
+                $('#paymentDetailsForm [name="formfeesamount"]').val(pd.formfeesamount);
+                $('#paymentDetailsForm input[name="formfeesexemption"][value="' + pd.formfeesexemption + '"]').prop('checked', true);
+                $('#paymentDetailsForm [name="formfeesdatepaid"]').val(pd.formfeesdatepaid);
+
+                $('#paymentDetailsForm [name="emdamount"]').val(pd.emdamount);
+                $('#paymentDetailsForm input[name="emdexemption"][value="' + pd.emdexemption + '"]').prop('checked', true);
+                $('#paymentDetailsForm [name="emddatepaid"]').val(pd.emddatepaid);
+                $('#paymentDetailsForm [name="emdestimatedreturndate"]').val(pd.emdestimatedreturndate);
+                $('#paymentDetailsForm [name="emdreturnamount"]').val(pd.emdreturnamount);
+                $('#paymentDetailsForm [name="emdreturndate"]').val(pd.emdreturndate);
+
+                $('#paymentDetailsForm [name="securitydepositamount"]').val(pd.securitydepositamount);
+                $('#paymentDetailsForm [name="securitydeposittype"]').val(pd.securitydeposittype);
+                $('#paymentDetailsForm [name="securitydepositdatepaid"]').val(pd.securitydepositdatepaid);
+                $('#paymentDetailsForm [name="securitydepositestimatedreturndate"]').val(pd.securitydepositestimatedreturndate);
+                $('#paymentDetailsForm [name="securitydepositreturnamount"]').val(pd.securitydepositreturnamount);
+                $('#paymentDetailsForm [name="securitydepositreturndate"]').val(pd.securitydepositreturndate);
+
+                $('#paymentDetailsForm [name="adminchargesamount"]').val(pd.adminchargesamount);
+                $('#paymentDetailsForm input[name="adminchargesexemption"][value="' + pd.adminchargesexemption + '"]').prop('checked', true);
+                $('#paymentDetailsForm [name="adminchargesdatepaid"]').val(pd.adminchargesdatepaid);
+
+                $('#paymentDetailsForm [name="facilitychargesamount"]').val(pd.facilitychargesamount);
+                $('#paymentDetailsForm input[name="facilitychargesexemption"][value="' + pd.facilitychargesexemption + '"]').prop('checked', true);
+                $('#paymentDetailsForm [name="facilitychargesdatepaid"]').val(pd.facilitychargesdatepaid);
+
+                $('#paymentDetailsForm [name="legalchargesamount"]').val(pd.legalchargesamount);
+                $('#paymentDetailsForm input[name="legalchargesexemption"][value="' + pd.legalchargesexemption + '"]').prop('checked', true);
+                $('#paymentDetailsForm [name="legalchargesdatepaid"]').val(pd.legalchargesdatepaid);
+
+                $('#paymentDetailsForm [name="addnlsecuritydepositamount"]').val(pd.addnlsecuritydepositamount);
+                $('#paymentDetailsForm input[name="addnlsecuritydepositexemption"][value="' + pd.addnlsecuritydepositexemption + '"]').prop('checked', true);
+                $('#paymentDetailsForm [name="addnlsecuritydepositdatepaid"]').val(pd.addnlsecuritydepositdatepaid);
+                $('#paymentDetailsForm [name="addnlsecuritydepositrefunddate"]').val(pd.addnlsecuritydepositrefunddate);
+            }
+
+            $('#e_doc1existing').empty();
+            $('#e_doc2existing').empty();
+            $('#e_doc3existing').empty();
+
+            if (data.document) {
+                var doc = data.document;
+                updatePaymentDocDisplay('doc1', doc.doc1, contractno, '#e_doc1existing');
+                updatePaymentDocDisplay('doc2', doc.doc2, contractno, '#e_doc2existing');
+                updatePaymentDocDisplay('doc3', doc.doc3, contractno, '#e_doc3existing');
+            }
+        }
+    });
+}
+
+$(document).ready(function () {
+    var pdContractNo = $('#paymentdetailscontractid').val();
+
+    $('#payment-details').click(function () {
+        if (pdContractNo && pdContractNo != '0' && pdContractNo != '') {
+            loadPaymentDetailsEdit(pdContractNo);
+        }
+    });
+
+    // preload since contract already exists on edit screen
+    if (pdContractNo && pdContractNo != '0' && pdContractNo != '') {
+        loadPaymentDetailsEdit(pdContractNo);
+    }
+
+    $("#paymentDetailsForm").submit(function (e) {
+        e.preventDefault();
+        $("#paymentdetailssubmitbtn").attr("disabled", true);
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            type: "POST",
+            url: "{{URL::to('addpaymentdetails')}}",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (data) {
+                $("#paymentdetailssubmitbtn").attr("disabled", false);
+                if (data.error) {
+                    alert(data.error);
+                } else if (data.exception) {
+                    alert(data.exception);
+                } else {
+                    $('#paymentterms').click();
+                }
+            },
+            error: function () {
+                $("#paymentdetailssubmitbtn").attr("disabled", false);
+                alert('Something went wrong. Try Again.');
+            }
+        });
+    });
+});
+</script>
+
+
+
+
     <script type="text/javascript">
 function addBillingCycleRow() {
     var newRow = '<tr class="billing-cycle-row">' +
@@ -1487,7 +1828,7 @@ $(document).ready(function () {
                 } else if (data.exception) {
                     alert('Try Again!!!!');
                 } else {
-                    $('#paymentterms').click();
+                    $('#payment-details').click();
                 }
             },
             error: function () {

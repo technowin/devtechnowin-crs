@@ -38,6 +38,10 @@ use App\Models\BillingPaymentCyclesModel;
 
 use Illuminate\Support\Facades\Storage;
 
+
+use App\Models\PaymentDetailsNewModel;
+
+
 class ContractController extends Controller
 {
     public function index()
@@ -3105,6 +3109,195 @@ public function getBillingDetails($contractno)
     return json_encode(array('cycleslist' => $cycleslist));
 }
 
+
+public function addPaymentDetails(Request $request)
+{
+    try {
+        $user = auth()->user();
+        $contractno = $request->input('contractno');
+
+        $pd = PaymentDetailsNewModel::where('contractno', $contractno)->first();
+
+        if ($pd == null) {
+            $pd = new PaymentDetailsNewModel();
+            $pd->contractno = $contractno;
+            $pd->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
+            $pd->created_by = $user->name;
+        } else {
+            $pd->updated_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
+            $pd->updated_by = $user->name;
+        }
+
+        $pd->formfeesamount = $this->checkifdataisempty($request->input('formfeesamount'));
+        $pd->formfeesexemption = $this->checkifdataisempty($request->input('formfeesexemption'));
+        $pd->formfeesdatepaid = $this->checkifdataisempty($request->input('formfeesdatepaid'));
+
+        $pd->emdamount = $this->checkifdataisempty($request->input('emdamount'));
+        
+        $pd->emdexemption = $this->checkifdataisempty($request->input('emdexemption'));
+        $pd->emddatepaid = $this->checkifdataisempty($request->input('emddatepaid'));
+        $pd->emdestimatedreturndate = $this->checkifdataisempty($request->input('emdestimatedreturndate'));
+        $pd->emdreturnamount = $this->checkifdataisempty($request->input('emdreturnamount'));
+        $pd->emdreturndate = $this->checkifdataisempty($request->input('emdreturndate'));
+
+        $pd->securitydepositamount = $this->checkifdataisempty($request->input('securitydepositamount'));
+        $pd->securitydeposittype = $this->checkifdataisempty($request->input('securitydeposittype'));
+        $pd->securitydepositdatepaid = $this->checkifdataisempty($request->input('securitydepositdatepaid'));
+        $pd->securitydepositestimatedreturndate = $this->checkifdataisempty($request->input('securitydepositestimatedreturndate'));
+        $pd->securitydepositreturnamount = $this->checkifdataisempty($request->input('securitydepositreturnamount'));
+        $pd->securitydepositreturndate = $this->checkifdataisempty($request->input('securitydepositreturndate'));
+
+        $pd->adminchargesamount = $this->checkifdataisempty($request->input('adminchargesamount'));
+        $pd->adminchargesexemption = $this->checkifdataisempty($request->input('adminchargesexemption'));
+        $pd->adminchargesdatepaid = $this->checkifdataisempty($request->input('adminchargesdatepaid'));
+
+        $pd->facilitychargesamount = $this->checkifdataisempty($request->input('facilitychargesamount'));
+        $pd->facilitychargesexemption = $this->checkifdataisempty($request->input('facilitychargesexemption'));
+        $pd->facilitychargesdatepaid = $this->checkifdataisempty($request->input('facilitychargesdatepaid'));
+
+        $pd->legalchargesamount = $this->checkifdataisempty($request->input('legalchargesamount'));
+        $pd->legalchargesexemption = $this->checkifdataisempty($request->input('legalchargesexemption'));
+        $pd->legalchargesdatepaid = $this->checkifdataisempty($request->input('legalchargesdatepaid'));
+
+        $pd->addnlsecuritydepositamount = $this->checkifdataisempty($request->input('addnlsecuritydepositamount'));
+        $pd->addnlsecuritydepositexemption = $this->checkifdataisempty($request->input('addnlsecuritydepositexemption'));
+        $pd->addnlsecuritydepositdatepaid = $this->checkifdataisempty($request->input('addnlsecuritydepositdatepaid'));
+        $pd->addnlsecuritydepositrefunddate = $this->checkifdataisempty($request->input('addnlsecuritydepositrefunddate'));
+
+        $pd->save();
+
+        // handle document uploads into shared contract_documents table
+        $docRow = ContractDocumentsModel::where('contractno', $contractno)
+            ->where('type', 'contract')
+            ->where('subtype', 'payment')
+            ->first();
+
+        if ($docRow == null) {
+            $docRow = new ContractDocumentsModel();
+            $docRow->contractno = $contractno;
+            $docRow->type = 'contract';
+            $docRow->subtype = 'payment';
+            $docRow->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
+            $docRow->created_by = $user->name;
+        } else {
+            $docRow->updated_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
+            $docRow->updated_by = $user->name;
+        }
+
+        if ($request->hasFile('doc1')) {
+            $file = $request->file('doc1');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $docRow->doc1 = $file->storeAs('contracts/' . $contractno . '/payment', $filename, 'public');
+        }
+
+        if ($request->hasFile('doc2')) {
+            $file = $request->file('doc2');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $docRow->doc2 = $file->storeAs('contracts/' . $contractno . '/payment', $filename, 'public');
+        }
+
+        if ($request->hasFile('doc3')) {
+            $file = $request->file('doc3');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $docRow->doc3 = $file->storeAs('contracts/' . $contractno . '/payment', $filename, 'public');
+        }
+
+        $docRow->save();
+
+        return json_encode(array('paymentdetails' => $pd, 'contractno' => $contractno));
+
+    } catch (Exception $exception) {
+        return json_encode(array(
+            'error' => 'Exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' . $exception->getLine()
+        ));
+    }
+}
+
+public function getPaymentDetails($contractno)
+{
+    $paymentdetails = PaymentDetailsNewModel::where('contractno', $contractno)->first();
+    $document = ContractDocumentsModel::where('contractno', $contractno)
+        ->where('type', 'contract')
+        ->where('subtype', 'payment')
+        ->first();
+
+    return json_encode(array('paymentdetails' => $paymentdetails, 'document' => $document));
+}
+
+public function viewPaymentDocument($contractno, $docField)
+{
+    $doc = ContractDocumentsModel::where('contractno', $contractno)
+        ->where('type', 'contract')
+        ->where('subtype', 'payment')
+        ->first();
+
+    if ($doc && $doc->$docField) {
+        $filePath = storage_path('app/public/' . $doc->$docField);
+        if (file_exists($filePath)) {
+            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+
+            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                return response()->file($filePath);
+            }
+
+            if ($extension == 'pdf') {
+                return response()->file($filePath, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+                ]);
+            }
+
+            return response()->download($filePath);
+        }
+    }
+
+    return redirect()->back()->with('error', 'File not found');
+}
+
+public function downloadPaymentDocument($contractno, $docField)
+{
+    $doc = ContractDocumentsModel::where('contractno', $contractno)
+        ->where('type', 'contract')
+        ->where('subtype', 'payment')
+        ->first();
+
+    if ($doc && $doc->$docField) {
+        $filePath = storage_path('app/public/' . $doc->$docField);
+        if (file_exists($filePath)) {
+            return response()->download($filePath);
+        }
+    }
+
+    return redirect()->back()->with('error', 'File not found');
+}
+
+public function deletePaymentDocument(Request $request)
+{
+    try {
+        $contractno = $request->contractno;
+        $docField = $request->doc_field;
+
+        $doc = ContractDocumentsModel::where('contractno', $contractno)
+            ->where('type', 'contract')
+            ->where('subtype', 'payment')
+            ->first();
+
+        if ($doc && $doc->$docField) {
+            if (Storage::disk('public')->exists($doc->$docField)) {
+                Storage::disk('public')->delete($doc->$docField);
+            }
+            $doc->$docField = null;
+            $doc->save();
+
+            return response()->json(['success' => true, 'message' => 'Document deleted successfully']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Document not found'], 404);
+
+    } catch (Exception $exception) {
+        return response()->json(['success' => false, 'message' => $exception->getMessage()], 500);
+    }
+}
 
 
 // Option   Condition

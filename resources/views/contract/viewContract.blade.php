@@ -28,6 +28,7 @@
                 <li role="presentation"><a href="#equipment-upload-tab" role="tab" id="equipment-upload" data-toggle="tab" aria-expanded="false">Equipment Upload</a></li>
 
                 <li role="presentation"><a href="#billing-tab" role="tab" id="billing-details" data-toggle="tab" aria-expanded="false">Billing Details</a></li>
+                <li role="presentation"><a href="#payment-details-tab" role="tab" id="payment-details" data-toggle="tab" aria-expanded="false">Payment Details New</a></li>
                 <li role="presentation"><a href="#payment-term-tab" role="tab" id="paymentterms" data-toggle="tab" aria-expanded="false">Payment Terms</a></li>
             </ul>
             <br>
@@ -686,6 +687,146 @@
 
 
 
+
+<div class="tab-pane fade" role="tabpanel" id="payment-details-tab" style="margin-left: 250px;">
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Payment Details New</h3>
+            </div>
+            <div class="panel-body">
+
+                <h5 class="text-primary">Form Fees</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_formfeesamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-3">: <span id="v_formfeesexemption"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_formfeesdatepaid"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">EMD</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_emdamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-3">: <span id="v_emdexemption"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_emddatepaid"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Est. Return Date</label>
+                    <div class="col-sm-3">: <span id="v_emdestimatedreturndate"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Return Amount</label>
+                    <div class="col-sm-3">: <span id="v_emdreturnamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Return Date</label>
+                    <div class="col-sm-3">: <span id="v_emdreturndate"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Security Deposit</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_securitydepositamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Type</label>
+                    <div class="col-sm-3">: <span id="v_securitydeposittype"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_securitydepositdatepaid"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Est. Return Date</label>
+                    <div class="col-sm-3">: <span id="v_securitydepositestimatedreturndate"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Return Amount</label>
+                    <div class="col-sm-3">: <span id="v_securitydepositreturnamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Return Date</label>
+                    <div class="col-sm-3">: <span id="v_securitydepositreturndate"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Admin Charges</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_adminchargesamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-3">: <span id="v_adminchargesexemption"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_adminchargesdatepaid"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Facility Charges</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_facilitychargesamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-3">: <span id="v_facilitychargesexemption"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_facilitychargesdatepaid"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Legal Charges</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_legalchargesamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-3">: <span id="v_legalchargesexemption"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_legalchargesdatepaid"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Additional Security Deposit</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Amount</label>
+                    <div class="col-sm-3">: <span id="v_addnlsecuritydepositamount"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Exemption</label>
+                    <div class="col-sm-3">: <span id="v_addnlsecuritydepositexemption"></span></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Date Paid</label>
+                    <div class="col-sm-3">: <span id="v_addnlsecuritydepositdatepaid"></span></div>
+                    <label class="col-sm-3 col-form-label text-muted">Refund Date</label>
+                    <div class="col-sm-3">: <span id="v_addnlsecuritydepositrefunddate"></span></div>
+                </div>
+
+                <hr/>
+                <h5 class="text-primary">Documents</h5>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Document 1</label>
+                    <div class="col-sm-6" id="v_doc1"></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Document 2</label>
+                    <div class="col-sm-6" id="v_doc2"></div>
+                </div>
+                <div class="row mt-1">
+                    <label class="col-sm-3 col-form-label text-muted">Document 3</label>
+                    <div class="col-sm-6" id="v_doc3"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
                 <div class="tab-pane fade" role="tabpanel" id="payment-term-tab" aria-labelledby="paymentterms">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -856,6 +997,106 @@
 @section('page-script')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{asset('custom-scripts/customdatavalidation.js')}}"></script>
+
+
+<script type="text/javascript">
+function loadPaymentDetailsView(contractno) {
+    $.ajax({
+        url: '{{ url("getpaymentdetails") }}/' + contractno,
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var pd = data.paymentdetails || {};
+
+            $('#v_formfeesamount').text(pd.formfeesamount || '-');
+            $('#v_formfeesexemption').text(pd.formfeesexemption || '-');
+            $('#v_formfeesdatepaid').text(pd.formfeesdatepaid || '-');
+
+            $('#v_emdamount').text(pd.emdamount || '-');
+            $('#v_emdexemption').text(pd.emdexemption || '-');
+            $('#v_emddatepaid').text(pd.emddatepaid || '-');
+            $('#v_emdestimatedreturndate').text(pd.emdestimatedreturndate || '-');
+            $('#v_emdreturnamount').text(pd.emdreturnamount || '-');
+            $('#v_emdreturndate').text(pd.emdreturndate || '-');
+
+            $('#v_securitydepositamount').text(pd.securitydepositamount || '-');
+            $('#v_securitydeposittype').text(pd.securitydeposittype || '-');
+            $('#v_securitydepositdatepaid').text(pd.securitydepositdatepaid || '-');
+            $('#v_securitydepositestimatedreturndate').text(pd.securitydepositestimatedreturndate || '-');
+            $('#v_securitydepositreturnamount').text(pd.securitydepositreturnamount || '-');
+            $('#v_securitydepositreturndate').text(pd.securitydepositreturndate || '-');
+
+            $('#v_adminchargesamount').text(pd.adminchargesamount || '-');
+            $('#v_adminchargesexemption').text(pd.adminchargesexemption || '-');
+            $('#v_adminchargesdatepaid').text(pd.adminchargesdatepaid || '-');
+
+            $('#v_facilitychargesamount').text(pd.facilitychargesamount || '-');
+            $('#v_facilitychargesexemption').text(pd.facilitychargesexemption || '-');
+            $('#v_facilitychargesdatepaid').text(pd.facilitychargesdatepaid || '-');
+
+            $('#v_legalchargesamount').text(pd.legalchargesamount || '-');
+            $('#v_legalchargesexemption').text(pd.legalchargesexemption || '-');
+            $('#v_legalchargesdatepaid').text(pd.legalchargesdatepaid || '-');
+
+            $('#v_addnlsecuritydepositamount').text(pd.addnlsecuritydepositamount || '-');
+            $('#v_addnlsecuritydepositexemption').text(pd.addnlsecuritydepositexemption || '-');
+            $('#v_addnlsecuritydepositdatepaid').text(pd.addnlsecuritydepositdatepaid || '-');
+            $('#v_addnlsecuritydepositrefunddate').text(pd.addnlsecuritydepositrefunddate || '-');
+
+            $('#v_doc1').html('-');
+                $('#v_doc2').html('-');
+                $('#v_doc3').html('-');
+                if (data.document) {
+                    var doc = data.document;
+                    renderPaymentDocViewOnly('v_doc1', doc.doc1, contractno, 'doc1');
+                    renderPaymentDocViewOnly('v_doc2', doc.doc2, contractno, 'doc2');
+                    renderPaymentDocViewOnly('v_doc3', doc.doc3, contractno, 'doc3');
+                }
+        }
+    });
+}
+
+function renderPaymentDocViewOnly(targetId, filePath, contractno, docField) {
+    if (!filePath) {
+        $('#' + targetId).html('-');
+        return;
+    }
+
+    var fileName = filePath.split('/').pop();
+    var shortName = fileName.length > 35 ? fileName.substring(0, 32) + '...' : fileName;
+    var fileExtension = fileName.split('.').pop().toLowerCase();
+    var isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    var viewUrl = '{{ url("view-payment-document") }}/' + contractno + '/' + docField;
+    var downloadUrl = '{{ url("download-payment-document") }}/' + contractno + '/' + docField;
+
+    var fileIcon = '';
+    if (fileExtension === 'pdf') {
+        fileIcon = '<i class="glyphicon glyphicon-file" style="color: #d9534f;"></i> ';
+    } else if (isImage) {
+        fileIcon = '<i class="glyphicon glyphicon-picture" style="color: #5bc0de;"></i> ';
+    } else {
+        fileIcon = '<i class="glyphicon glyphicon-file" style="color: #f0ad4e;"></i> ';
+    }
+
+    var html = fileIcon +
+        '<a href="' + viewUrl + '" target="_blank" class="btn btn-info btn-xs" title="View">' +
+        '<i class="glyphicon glyphicon-eye-open"></i> View</a> ' +
+        '<a href="' + downloadUrl + '" class="btn btn-success btn-xs" title="Download">' +
+        '<i class="glyphicon glyphicon-download-alt"></i> Download</a> ' +
+        '<span style="margin-left:8px;">' + shortName + '</span>';
+
+    $('#' + targetId).html(html);
+}
+
+$(document).ready(function () {
+    var contractno = '{{ $editconract->contractno }}';
+    $('#payment-details').click(function () {
+        loadPaymentDetailsView(contractno);
+    });
+});
+</script>
+
+
 
 <script type="text/javascript">
 function populateTotalContractAmountView() {

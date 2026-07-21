@@ -89,7 +89,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="row{{ $errors->has('workordertype') ? ' has-error' : '' }}">
+                                        <div class="row {{ $errors->has('workordertype') ? ' has-error' : '' }}">
                                             <label for="input" class="col-sm-3 col-form-label text-muted">Work Order Type</label>
                                             <div class="col-sm-6">
                                                 {{ Form::select('workordertype',array('None'=>'None','AMC'=>'AMC', 'Warranty'=>'Warranty'),null, array('placeholder' => '--SELECT--','id' => 'workordertype', 'required' => 'required')) }}

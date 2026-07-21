@@ -603,7 +603,11 @@ Route::get('addbillingdetails', 'ContractController@addBillingDetails');
 
 
 Route::get('getbillingdetails/{contractno}', 'ContractController@getBillingDetails');
+Route::post('addpaymentdetails', 'ContractController@addPaymentDetails');
+Route::get('getpaymentdetails/{contractno}', 'ContractController@getPaymentDetails');
 
-
+Route::get('view-payment-document/{contractno}/{docField}', 'ContractController@viewPaymentDocument');
+Route::get('download-payment-document/{contractno}/{docField}', 'ContractController@downloadPaymentDocument');
+Route::post('delete-payment-document', 'ContractController@deletePaymentDocument');
 
 #endregion
