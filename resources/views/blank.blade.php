@@ -242,7 +242,7 @@
             <div class="welcome-content">
                 <h1>
                     Welcome, {{ Auth::user()->name }}!
-                    <span class="wave-emoji">👋</span>
+                    <!-- <span class="wave-emoji">!!!</span> -->
                 </h1>
                 <p id="greeting-message">Good to see you here. Have a great day!</p>
                 <div class="date-badge">
@@ -262,13 +262,13 @@
     var emoji = '';
     
     if (hour < 12) {
-        greeting = '🌅 Good Morning';
+        greeting = 'Good Morning';
         emoji = 'Start your day with positivity!';
     } else if (hour < 17) {
-        greeting = '☀️ Good Afternoon';
+        greeting = 'Good Afternoon';
         emoji = 'Stay productive and focused!';
     } else {
-        greeting = '🌙 Good Evening';
+        greeting = 'Good Evening';
         emoji = 'Time to unwind and relax!';
     }
     
