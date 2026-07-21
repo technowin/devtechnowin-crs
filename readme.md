@@ -51,3 +51,13 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+
+#on your local machine to push to github
+git status
+git add .
+git commit -m "Add comment"
+git push origin master
+
+#on putty to make it live
+cd /var/www/devtechnowin-crs
+git pull origin master
