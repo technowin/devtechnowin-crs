@@ -2,6 +2,59 @@
 @section('pageTitle', 'Add Contract')
 @section('page-css')
     <link href="{{asset('css/tab-css.css')}}" rel="stylesheet">
+    <style>
+/* Force table to respect colgroup widths */
+#billingcyclestable {
+    table-layout: fixed !important;
+    width: 100% !important;
+    word-break: break-word;
+}
+
+/* Minimize cell padding and font size */
+#billingcyclestable th,
+#billingcyclestable td {
+    padding: 2px 1px !important;
+    font-size: 10px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Force all inputs to shrink to fit the cell */
+#billingcyclestable input,
+#billingcyclestable select,
+#billingcyclestable button {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;    /* key: remove default min-width */
+    box-sizing: border-box !important;
+    padding: 1px 2px !important;
+    height: 22px !important;
+    font-size: 10px !important;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+/* Remove button inside table */
+#billingcyclestable .btn-xs {
+    font-size: 9px !important;
+    padding: 0 4px !important;
+    height: 20px !important;
+}
+
+/* Ensure the responsive wrapper scrolls horizontally */
+#billing-tab .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Optional: make the panel body have less padding */
+#billing-tab .panel-body {
+    padding: 10px;
+}
+</style>
 @stop
 @section('content')
 
@@ -897,8 +950,8 @@
 
 
 
-<div class="tab-pane fade" role="tabpanel" id="billing-tab" style="margin-left: 250px;">
-    <div class="container">
+<div class="tab-pane fade" role="tabpanel" id="billing-tab" style="margin-left: 250px; margin-right: 20px;">
+    <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Billing Details</h3>
@@ -928,33 +981,50 @@
 
                 <br/>
                 <h4>Payment Cycles</h4>
-                <table class="table table-bordered" id="billingcyclestable">
-                    <thead>
-                        <tr>
-                            <th width="6%">Cycle No</th>
-                            <th width="12%">Estimated Billing Date</th>
-                            <th width="12%">Actual Bill Date</th>
-                            <th width="10%">Bill Number</th>
-                            <th width="12%">Bill Paid Amount</th>
-                            <th width="12%">Bill Payment Date</th>
-                            <th width="12%">Next Payment Reminder</th>
-                            <th width="12%">Running Total</th>
-                            <th width="12%">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="billingcyclesbody">
-                        <!-- Rows are added dynamically via JS. Table starts empty. -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4"><b>Total Paid</b></td>
-                            <td><span id="totalpaidamount">0.00</span></td>
-                            <td colspan="4">
-                                <span id="billingmatchstatus" class="label label-warning">Remaining: 0.00</span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="table-responsive">
+    <table class="table table-bordered" id="billingcyclestable">
+        <colgroup>
+            <col style="width: 4%;">   <!-- Cycle No -->
+            <col style="width: 9%;">   <!-- Estimated Billing Date -->
+            <col style="width: 9%;">   <!-- Actual Bill Date -->
+            <col style="width: 7%;">   <!-- Bill Number -->
+            <col style="width: 9%;">   <!-- Bill Amount -->
+            <col style="width: 9%;">   <!-- Next Payment Reminder -->
+            <col style="width: 9%;">   <!-- Bill Payment Date -->
+            <col style="width: 9%;">   <!-- Bill Paid Amount -->
+            <col style="width: 6%;">   <!-- Difference -->
+            <col style="width: 6%;">   <!-- Running Total -->
+            <col style="width: 5%;">   <!-- Action -->
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Cycle</th>
+                <th>Est. Billing</th>
+                <th>Actual Bill</th>
+                <th>Bill No.</th>
+                <th>Amount</th>
+                <th>Reminder</th>
+                <th>Payment Date</th>
+                <th>Paid</th>
+                <th>Diff</th>
+                <th>Running</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="billingcyclesbody">
+            <!-- rows added via JS -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4"><b>Total Paid</b></td>
+                <td><span id="totalpaidamount">0.00</span></td>
+                <td colspan="4">
+                    <span id="billingmatchstatus" class="label label-warning">Remaining: 0.00</span>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 
                 <button type="button" class="btn btn-primary btn-sm" id="addcyclebtn" onclick="addBillingCycleRow();">+ Add Payment Cycle</button>
 
@@ -1531,9 +1601,11 @@ function addBillingCycleRow() {
         '<td><input type="date" name="estimatedbillingdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
         '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
         '<td><input type="text" name="billnumber[]" class="form-control form-control-sm"></td>' +
-        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal();"></td>' +
-        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" max="2050-12-31"></td>' +
+        '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" onkeyup="calculateDifference(this);"></td>' +
         '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" max="2050-12-31"></td>' +
+        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" max="2050-12-31"></td>' +
+        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+        '<td class="row-difference">0.00</td>' +
         '<td class="row-running-total">0.00</td>' +
         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
         '</tr>';
@@ -1541,6 +1613,14 @@ function addBillingCycleRow() {
     $('#billingcyclesbody').append(newRow);
     renumberBillingRows();
     validateBillTotal();
+}
+
+function calculateDifference(el) {
+    var row = $(el).closest('tr');
+    var billAmt = parseFloat(row.find('.bill-amount').val()) || 0;
+    var paidAmt = parseFloat(row.find('.bill-paid-amount').val()) || 0;
+    var diff = billAmt - paidAmt;
+    row.find('.row-difference').text(diff.toFixed(2));
 }
 
 function removeBillingCycleRow(el) {
@@ -1597,14 +1677,20 @@ function loadBillingDetails(contractno) {
             $('#billingcyclesbody').empty();
             if (data.cycleslist && data.cycleslist.length > 0) {
                 $.each(data.cycleslist, function (i, cycle) {
+                    var billAmt = parseFloat(cycle.billamount) || 0;
+                    var paidAmt = parseFloat(cycle.billpaidamount) || 0;
+                    var diff = (billAmt - paidAmt).toFixed(2);
+
                     var row = '<tr class="billing-cycle-row">' +
                         '<td class="cycle-no"></td>' +
                         '<td><input type="date" name="estimatedbillingdate[]" class="form-control form-control-sm" value="' + (cycle.estimatedbillingdate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" value="' + (cycle.actualbilldate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="text" name="billnumber[]" class="form-control form-control-sm" value="' + (cycle.billnumber || '') + '"></td>' +
-                        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal();"></td>' +
-                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" value="' + (cycle.billamount || '') + '" onkeyup="calculateDifference(this);"></td>' +
                         '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" value="' + (cycle.nextreminderdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+                        '<td class="row-difference">' + diff + '</td>' +
                         '<td class="row-running-total">0.00</td>' +
                         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
                         '</tr>';
@@ -1612,7 +1698,7 @@ function loadBillingDetails(contractno) {
                 });
                 renumberBillingRows();
             } else {
-                addBillingCycleRow(); // start with one blank row if nothing saved yet
+                addBillingCycleRow();
             }
             validateBillTotal();
         },
@@ -2968,13 +3054,18 @@ function updateProgress(percent) {
             }
         }
         $("#workordertypeid").change(function () {
-            if ($('#workordertypeid').val() == "Hardware AMC" ){
+            if ($('#workordertypeid').val() == "Hardware AMC"){
 
                     $("#customername").show();
                     $('#serviceid').show();
 
             }
             else if($('#workordertypeid').val() == "Hardware Warranty")
+            {
+                $('#serviceid').show();
+                $("#customername").hide();
+            }
+            else if($('#workordertypeid').val() == "Software development")
             {
                 $('#serviceid').show();
                 $("#customername").hide();
@@ -3021,7 +3112,8 @@ function updateProgress(percent) {
                 alert('Select Workorder Type');
                 return false;
             }
-            if (($('#workordertypeid').val() == "Hardware AMC" || $('#workordertypeid').val() == "Hardware Warranty") && $('#servicefrequencyid').val() == "") {
+            if (($('#workordertypeid').val() == "Hardware AMC" || $('#workordertypeid').val() == "Hardware Warranty" ||
+        $('#workordertypeid').val() == "Software development") && $('#servicefrequencyid').val() == "") {
                 alert('Select Service Frequency');
                 return false;
             }

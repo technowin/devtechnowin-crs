@@ -3048,6 +3048,7 @@ public function addBillingDetails()
         $estimatedbillingdate = isset($_GET['estimatedbillingdate']) ? $_GET['estimatedbillingdate'] : [];
         $actualbilldate = isset($_GET['actualbilldate']) ? $_GET['actualbilldate'] : [];
         $billnumber = isset($_GET['billnumber']) ? $_GET['billnumber'] : [];
+        $billamount = isset($_GET['billamount']) ? $_GET['billamount'] : [];
         $billpaidamount = isset($_GET['billpaidamount']) ? $_GET['billpaidamount'] : [];
         $billpaymentdate = isset($_GET['billpaymentdate']) ? $_GET['billpaymentdate'] : [];
         $nextreminderdate = isset($_GET['nextreminderdate']) ? $_GET['nextreminderdate'] : [];
@@ -3065,6 +3066,7 @@ public function addBillingDetails()
             $paid = isset($billpaidamount[$i]) ? $billpaidamount[$i] : '';
             $paydate = isset($billpaymentdate[$i]) ? $billpaymentdate[$i] : '';
             $billno = isset($billnumber[$i]) ? $billnumber[$i] : '';
+            $billamt = isset($billamount[$i]) ? $billamount[$i] : '';
             $estdate = isset($estimatedbillingdate[$i]) ? $estimatedbillingdate[$i] : '';
             $actdate = isset($actualbilldate[$i]) ? $actualbilldate[$i] : '';
 
@@ -3078,6 +3080,7 @@ public function addBillingDetails()
             $cycle->estimatedbillingdate = $this->checkifdataisempty($estdate);
             $cycle->actualbilldate = $this->checkifdataisempty($actdate);
             $cycle->billnumber = $this->checkifdataisempty($billno);
+            $cycle->billamount = $this->checkifdataisempty($billamt);
             $cycle->billpaidamount = $this->checkifdataisempty($paid);
             $cycle->billpaymentdate = $this->checkifdataisempty($paydate);
             $cycle->nextreminderdate = isset($nextreminderdate[$i]) ? $this->checkifdataisempty($nextreminderdate[$i]) : null;

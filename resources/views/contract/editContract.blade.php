@@ -154,7 +154,7 @@
                                     @endif
                                 </div>
                             </div>
-{{--                            @if($editconract->workordertype == "Hardware AMC" || $editconract->workordertype == "Hardware Warranty" || $editconract->workordertype == "AMC" || $editconract->workordertype == "Warranty")--}}
+{{--                            @if($editconract->workordertype == "Hardware AMC" || $editconract->workordertype == "Hardware Warranty" || $editconract->workordertype == "AMC" || $editconract->workordertype == "Software development" || $editconract->workordertype == "Warranty")--}}
                             <div class="row{{ $errors->has('servicefrequency') ? ' has-error' : '' }} mt-1" id="servicedivid">
                                 <label for="input" class="col-sm-3 col-form-label text-muted">Service Frequency</label>
                                 <div class="col-sm-6">
@@ -1026,15 +1026,17 @@
                 <table class="table table-bordered" id="billingcyclestable">
                     <thead>
                         <tr>
-                            <th width="6%">Cycle No</th>
-                            <th width="12%">Estimated Billing Date</th>
-                            <th width="12%">Actual Bill Date</th>
-                            <th width="10%">Bill Number</th>
-                            <th width="12%">Bill Paid Amount</th>
-                            <th width="12%">Bill Payment Date</th>
-                            <th width="12%">Next Payment Reminder</th>
-                            <th width="12%">Running Total</th>
-                            <th width="12%">Action</th>
+                             <th width="6%">Cycle No</th>
+                            <th width="10%">Estimated Billing Date</th>
+                            <th width="10%">Actual Bill Date</th>
+                            <th width="9%">Bill Number</th>
+                            <th width="9%">Bill Amount</th>
+                            <th width="10%">Next Payment Reminder</th>
+                            <th width="10%">Bill Payment Date</th>
+                            <th width="9%">Bill Paid Amount</th>
+                            <th width="9%">Difference</th>
+                            <th width="9%">Running Total</th>
+                            <th width="9%">Action</th>
                         </tr>
                     </thead>
                     <tbody id="billingcyclesbody">
@@ -1316,7 +1318,7 @@
                                         <span class="help-block"><strong>{{ $errors->first('facilitycharges') }}</strong></span>
                                     </div>
                                 </div>
-                                @if($editconract->workordertype == 'Hardware Warranty' || $editconract->workordertype == 'Hardware AMC' || $editconract->workordertype == 'AMC' || $editconract->workordertype == 'Warranty')
+                                @if($editconract->workordertype == 'Hardware Warranty' || $editconract->workordertype == 'Hardware AMC' || $editconract->workordertype == 'AMC' || $editconract->workordertype == 'Software development' || $editconract->workordertype == 'Warranty')
                                 <div class="row{{ $errors->has('paymentintervalforamc') ? ' has-error' : '' }} mt-1">
                                     <label for="input" class="col-sm-4 col-form-label text-muted">Payment Interval For AMC </label>
                                     <div class="col-sm-4">
@@ -1711,9 +1713,11 @@ function addBillingCycleRow() {
         '<td><input type="date" name="estimatedbillingdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
         '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
         '<td><input type="text" name="billnumber[]" class="form-control form-control-sm"></td>' +
-        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal();"></td>' +
-        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" max="2050-12-31"></td>' +
+        '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" onkeyup="calculateDifference(this);"></td>' +
         '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" max="2050-12-31"></td>' +
+        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" max="2050-12-31"></td>' +
+        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+        '<td class="row-difference">0.00</td>' +
         '<td class="row-running-total">0.00</td>' +
         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
         '</tr>';
@@ -1721,6 +1725,14 @@ function addBillingCycleRow() {
     $('#billingcyclesbody').append(newRow);
     renumberBillingRows();
     validateBillTotal();
+}
+
+function calculateDifference(el) {
+    var row = $(el).closest('tr');
+    var billAmt = parseFloat(row.find('.bill-amount').val()) || 0;
+    var paidAmt = parseFloat(row.find('.bill-paid-amount').val()) || 0;
+    var diff = billAmt - paidAmt;
+    row.find('.row-difference').text(diff.toFixed(2));
 }
 
 function removeBillingCycleRow(el) {
@@ -1777,14 +1789,20 @@ function loadBillingDetails(contractno) {
             $('#billingcyclesbody').empty();
             if (data.cycleslist && data.cycleslist.length > 0) {
                 $.each(data.cycleslist, function (i, cycle) {
+                    var billAmt = parseFloat(cycle.billamount) || 0;
+                    var paidAmt = parseFloat(cycle.billpaidamount) || 0;
+                    var diff = (billAmt - paidAmt).toFixed(2);
+
                     var row = '<tr class="billing-cycle-row">' +
                         '<td class="cycle-no"></td>' +
                         '<td><input type="date" name="estimatedbillingdate[]" class="form-control form-control-sm" value="' + (cycle.estimatedbillingdate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" value="' + (cycle.actualbilldate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="text" name="billnumber[]" class="form-control form-control-sm" value="' + (cycle.billnumber || '') + '"></td>' +
-                        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal();"></td>' +
-                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" value="' + (cycle.billamount || '') + '" onkeyup="calculateDifference(this);"></td>' +
                         '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" value="' + (cycle.nextreminderdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+                        '<td class="row-difference">' + diff + '</td>' +
                         '<td class="row-running-total">0.00</td>' +
                         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
                         '</tr>';
@@ -1934,7 +1952,7 @@ $(document).ready(function () {
 //                maxItems: 1
                 create: false
             });
-            if($('#hdcompresinvetypeid').val() == "Hardware AMC" || $('#hdcompresinvetypeid').val() == "Hardware Warranty" || $('#hdcompresinvetypeid').val() == "AMC" || $('#hdcompresinvetypeid').val() == "Warranty")
+            if($('#hdcompresinvetypeid').val() == "Hardware AMC" || $('#hdcompresinvetypeid').val() == "Hardware Warranty" || $('#hdcompresinvetypeid').val() == "AMC" || $('#hdcompresinvetypeid').val() == "Warranty" || $('#hdcompresinvetypeid').val() == "Software development")
             {
                 $('#servicedivid').show();
             }

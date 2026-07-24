@@ -654,13 +654,15 @@
                     <thead>
                         <tr>
                             <th width="6%">Cycle No</th>
-                            <th width="13%">Estimated Billing Date</th>
-                            <th width="13%">Actual Bill Date</th>
-                            <th width="12%">Bill Number</th>
-                            <th width="14%">Bill Paid Amount</th>
-                            <th width="13%">Bill Payment Date</th>
-                            <th width="14%">Next Payment Reminder</th>
-                            <th width="15%">Running Total</th>
+            <th width="10%">Estimated Billing Date</th>
+            <th width="10%">Actual Bill Date</th>
+            <th width="9%">Bill Number</th>
+            <th width="9%">Bill Amount</th>
+            <th width="10%">Next Payment Reminder</th>
+            <th width="10%">Bill Payment Date</th>
+            <th width="9%">Bill Paid Amount</th>
+            <th width="9%">Difference</th>
+            <th width="9%">Running Total</th>
                         </tr>
                     </thead>
                     <tbody id="billingcyclesviewbody">
@@ -1116,25 +1118,29 @@ function loadBillingDetailsView(contractno) {
             var totalPaid = 0;
 
             if (data.cycleslist && data.cycleslist.length > 0) {
-                $.each(data.cycleslist, function (i, cycle) {
-                    var paid = parseFloat(cycle.billpaidamount) || 0;
-                    totalPaid += paid;
+    $.each(data.cycleslist, function (i, cycle) {
+        var paid = parseFloat(cycle.billpaidamount) || 0;
+        var billAmt = parseFloat(cycle.billamount) || 0;
+        var diff = (billAmt - paid).toFixed(2);
+        totalPaid += paid;
 
-                    var row = '<tr>' +
-                        '<td>' + (i + 1) + '</td>' +
-                        '<td>' + (cycle.estimatedbillingdate || '-') + '</td>' +
-                        '<td>' + (cycle.actualbilldate || '-') + '</td>' +
-                        '<td>' + (cycle.billnumber || '-') + '</td>' +
-                        '<td>' + (cycle.billpaidamount ? parseFloat(cycle.billpaidamount).toFixed(2) : '-') + '</td>' +
-                        '<td>' + (cycle.billpaymentdate || '-') + '</td>' +
-                        '<td>' + (cycle.nextreminderdate || '-') + '</td>' +
-                        '<td>' + totalPaid.toFixed(2) + '</td>' +
-                        '</tr>';
-                    $('#billingcyclesviewbody').append(row);
-                });
-            } else {
-                $('#billingcyclesviewbody').append('<tr><td colspan="8" class="text-center text-muted">No payment cycles recorded.</td></tr>');
-            }
+        var row = '<tr>' +
+            '<td>' + (i + 1) + '</td>' +
+            '<td>' + (cycle.estimatedbillingdate || '-') + '</td>' +
+            '<td>' + (cycle.actualbilldate || '-') + '</td>' +
+            '<td>' + (cycle.billnumber || '-') + '</td>' +
+            '<td>' + (cycle.billamount ? billAmt.toFixed(2) : '-') + '</td>' +
+            '<td>' + (cycle.nextreminderdate || '-') + '</td>' +
+            '<td>' + (cycle.billpaymentdate || '-') + '</td>' +
+            '<td>' + (cycle.billpaidamount ? paid.toFixed(2) : '-') + '</td>' +
+            '<td>' + diff + '</td>' +
+            '<td>' + totalPaid.toFixed(2) + '</td>' +
+            '</tr>';
+        $('#billingcyclesviewbody').append(row);
+    });
+} else {
+    $('#billingcyclesviewbody').append('<tr><td colspan="10" class="text-center text-muted">No payment cycles recorded.</td></tr>');
+}
 
             $('#totalpaidamount').text(totalPaid.toFixed(2));
             $('#totalpaidsofardisplay').text(totalPaid.toFixed(2));

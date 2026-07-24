@@ -91,7 +91,7 @@
                             |
                         <a href="{{ URL::to('editcontract',array($contract->contractno))}}">edit</a>
                         @endif
-                        @if($contract->contracttodate <= \Carbon\Carbon::now() && ($contract->workordertype == 'AMC' || $contract->workordertype == 'Hardware AMC' || $contract->workordertype == 'Warranty') && $contract->closuredate == null)
+                        @if($contract->contracttodate <= \Carbon\Carbon::now() && ($contract->workordertype == 'AMC' || $contract->workordertype == 'Hardware AMC' || $contract->workordertype == 'Software development' || $contract->workordertype == 'Warranty') && $contract->closuredate == null)
                             <a href="{{ URL::to('amendcontract',array('id'=>$contract->contractno, 'customername' =>$contract->customername ))}}">amend</a>
                         @endif
                     </td>
