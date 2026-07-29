@@ -610,4 +610,6 @@ Route::get('view-payment-document/{contractno}/{docField}', 'ContractController@
 Route::get('download-payment-document/{contractno}/{docField}', 'ContractController@downloadPaymentDocument');
 Route::post('delete-payment-document', 'ContractController@deletePaymentDocument');
 
+Route::get('/contractsdashboard', 'ContractController@dashboardnew')->name('contracts.dashboardnew');
+
 #endregion

@@ -156,18 +156,7 @@ class ContractController extends Controller
                 $contract->contractno = $code;
                 $incrementid = $tempcode['incrementid'];
                 $contract->save();
-//                if ($_GET['workordertype'] == "Software Maintenance") {
-//                    $service = new ServiceManagementModel();
-//                    $id = Uuid::uuid1();
-//                    $service->id = $id;
-//                    $service->contractno = $code;
-//                    $service->customercode = $this->checkifdataisempty($_GET['customers']);
-//                    $service->serviceadate = $_GET['servicedate'];
-//                    $service->servicereminderdate = $_GET['servicereminderdate'];
-//                    $service->created_at = Carbon::now(new \DateTimeZone('Asia/Kolkata'));
-//                    $service->created_by = Auth::id();
-//                    $service->save();
-//                }
+
                 if ($_GET['workordertype'] == "Hardware AMC") {
                     $serviceparameter = ServiceParametersModel::where('name', $_GET['serviceParameterscode'])->get();
                     $fromdate = $_GET['contracttodate'];
@@ -209,37 +198,7 @@ class ContractController extends Controller
                     $supply->created_by = Auth::id();
                     $supply->save();
                 }
-//                if($_GET['workordertype'] == "Hardware Warranty") {
-//                    $serviceparameter = ServiceParametersModel::where('name',$_GET['serviceParameterscode'])->get();
-//                    $fromdate = $_GET['contracttodate'];
-//                    $todate = $_GET['contractfromdate'];
-//                    $to = \Carbon\Carbon::createFromFormat('Y-m-d', $fromdate);
-//                    $from = \Carbon\Carbon::createFromFormat('Y-m-d', $todate);
-//                    $months = $to->diffInMonths($from);
-//                    $countmonths = $months / $serviceparameter[0]->id;
-//                    $getdate =  $_GET['contractfromdate'];
-//                    for ($i = 0; $i < $countmonths; $i++) {
-//                        $supply = new SupplyManagementModel();
-//                        $id = Uuid::uuid1();
-//                        $supply->id = $id;
-//                        $supply->contractno = $code;
-//                        $supply->customercode = $this->checkifdataisempty($_GET['customers']);
-//                        if($i == 0)
-//                        {
-//                            $supply->preventivemaintenancedate = date('Y-m-d', strtotime($getdate.'+'.$serviceparameter[0]->id.'days'));
-//                            $getdate = $supply->preventivemaintenancedate;
-//                        }
-//                        else
-//                        {
-//                            $supply->preventivemaintenancedate = $getdate;
-//                        }
-//                        $supply->preventivemaintenancereminderdate = date('Y-m-d', strtotime($getdate.'-'.$serviceparameter[0]->leadlogdays.'days'));
-//                        $supply->created_at = Carbon::now(new \DateTimeZone('Asia/Kolkata'));
-//                        $supply->created_by = Auth::id();
-//                        $supply->save();
-//                        $getdate = date('Y-m-d', strtotime($getdate.' +'.$serviceparameter[0]->id.'days'));
-//                    }
-//                }
+
 
                 if ($contract->save() == true) {
                     $incrementcontractid = "Contractno";
@@ -262,14 +221,6 @@ class ContractController extends Controller
 
             return json_encode(array('code' => $code, 'customercode' => $customercode, 'contractperiod' => $contractperiod, 'serviceparameter' => $serviceparameter));
 
-//            $customerlist = ContractMasterModel::where('contractno', '=', $code)->get()->first();
-//            $customercode = $customerlist->customercode;
-//            $contractperiod = $customerlist->contractperiod;
-//            return json_encode(array('code' => $code, 'customercode' => $customercode, 'contractperiod' => $contractperiod));
-
-        // } catch (Exception $exception) {
-        //     return json_encode($exception);
-        // }
 
         } catch (Exception $exception) {
             return response()->json([
@@ -879,15 +830,6 @@ class ContractController extends Controller
             $paymentintervalamc = ServiceParametersModel::where('id', '>=', $serviceparameterid->id)->pluck('name', 'name');
         }
 
-
-//        if($contract->workordertype == 'Hardware AMC'|| $contract->workordertype == 'AMC' || $contract->workordertype == 'Hardware Warranty' || $contract->workordertype == 'Warranty')
-//        {
-//
-//        }
-//        else{
-//            $serviceparameterid = '';
-//            $paymentintervalamc = '';
-//        }
         $serviceChangeId = '';
         // $is_amendment = !empty($editconract->amendmentno) ? true : false;
         $is_amendment = ($editconract->amendmentno !== null && $editconract->amendmentno !== '' && $editconract->amendmentno !== '0') ? true : false;
@@ -1671,278 +1613,6 @@ class ContractController extends Controller
         return view('contract.amendcontract', compact('id', 'customername'));
     }
 
-//     public function amendcontractcreatenewcontract(Request $request, $contractno)
-//     {
-//         $newcontractno = null;
-
-//         $common = new CommonController();
-//         $user = auth()->user();
-
-//         #region Add Contract Master Data
-//         $oldcontract = ContractMasterModel::findorfail($request->contractno);
-
-//         $contract = new ContractMasterModel;
-//         $contract->customercode = $this->checkifdataisempty($oldcontract->customercode);
-//         $contract->tenderno = $this->checkifdataisempty($oldcontract->tenderno);
-//         $contract->tenderopendate = $this->checkifdataisempty($oldcontract->tenderopendate);
-//         $contract->workordertype = $this->checkifdataisempty($oldcontract->workordertype);
-//         $contract->workorderno = $this->checkifdataisempty($oldcontract->workorderno);
-//         $contract->workorderdescription = $this->checkifdataisempty($oldcontract->workorderdescription);
-//         $contract->workorderdate = $this->checkifdataisempty($oldcontract->workorderdate);
-//         $contract->contractfromdate = $this->checkifdataisempty($request->contractfromdate);
-//         $contract->contracttodate = $this->checkifdataisempty($request->contracttodate);
-
-//         $to = Carbon::createFromFormat('Y-m-d', $request->contractfromdate);
-//         $from = Carbon::createFromFormat('Y-m-d', $request->contracttodate);
-//         $months = $to->diffInMonths($from);
-
-//         //Get difference between fromdate and todate
-//         $year = $to->diffInYears($from);
-//         if ($year == 0) {
-//             $date = $to->diffInMonths($from);
-//             $date = '0.' . $date;
-//         } else {
-//             $remaingmonths = $months - $year * 12;
-//             $date = $year . '.' . $remaingmonths;
-//         }
-
-//         $contract->purchaseorderno = $this->checkifdataisempty($oldcontract->purchaseorderno);
-//         $contract->purchaseorderdate = $this->checkifdataisempty($oldcontract->purchaseorderdate);
-//         $contract->amendmentno = $request->amendmentno;
-//         $contract->amendmentdescription = $request->amendmentdescription;
-//         $contract->renewalperiod = $this->checkifdataisempty($date);
-//         $contract->totalcost = $this->checkifdataisempty($oldcontract->totalcost);
-//         $contract->contractperiod = $this->checkifdataisempty($date);
-//             $contract->closuredate = $this->checkifdataisempty($oldcontract->closuredate);
-
-
-//         $contract->servicefrequency = $this->checkifdataisempty($oldcontract->servicefrequency);
-//         $contract->comprehensivetype = $this->checkifdataisempty($oldcontract->comprehensivetype);
-//         $contract->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//         $contract->created_by = $user->name;
-//         $contract->updated_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//         $incrementfor = 'Contractno';
-//         $tempcode = $this->contractno($contract->contractfromdate, $contract->contracttodate, $contract->workordertype, $incrementfor);
-//         $contract->contractno = $tempcode['code'];
-//         $newcontractno = $tempcode['code'];
-//         $incrementid = $tempcode['incrementid'];
-//         $contract->save();
-
-//         if($oldcontract->closuredate == null){
-//             $oldcontract->closuredate = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//             $oldcontract->save();
-//         }
-
-
-//         $serviceparameter = ServiceParametersModel::where('name', $oldcontract->servicefrequency)->get()->first();
-
-//         if ($contract->save() == true) {
-//             $incrementcontractid = "Contractno";
-//             $modelincrement = IncrementMasterModel::find(IncrementMasterModel::where('incrementfor', $incrementcontractid)->first()->incrementid);
-//             $modelincrement->incrementvalue = $incrementid;
-//             $modelincrement->save();
-//         }
-
-//         if ($oldcontract->workordertype == "Software Maintenance") {
-//             $fromdate = $request->contractfromdate;
-//             $todate = $request->contracttodate;
-//             $to = Carbon::createFromFormat('Y-m-d', $todate);
-//             $from = Carbon::createFromFormat('Y-m-d', $fromdate);
-//             $months = $to->diffInMonths($from);
-//             $countmonths = $months / $serviceparameter->id;
-//             $getdate = $request->contractfromdate;
-//             for ($i = 0; $i < $countmonths; $i++) {
-//                 $service = new ServiceManagementModel();
-//                 $id = Uuid::uuid1();
-//                 $service->id = $id;
-//                 $service->contractno = $tempcode['code'];
-//                 $service->customercode = $this->checkifdataisempty($oldcontract->customercode);
-//                 if ($i == 0) {
-//                     $service->serviceadate = date('Y-m-d', strtotime($getdate . '+' . $serviceparameter->id . 'months -1 days'));
-//                     $getdate = $service->serviceadate;
-//                 } else {
-//                     $service->serviceadate = $getdate;
-//                 }
-//                 $service->servicereminderdate = date('Y-m-d', strtotime($getdate . '-' . $serviceparameter->leadlogdays . 'days'));
-//                 $service->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//                 $service->created_by = $user->name;
-//                 $service->save();
-//                 $getdate = date('Y-m-d', strtotime($getdate . '+' . $serviceparameter->id . 'months'));
-//             }
-//         }
-
-//         if ($oldcontract->workordertype == "Hardware Warranty") {
-//             $servicedate = DB::select(DB::raw("SELECT DATE_ADD('$request->contractfromdate', INTERVAL $serviceparameter->servicedays - $serviceparameter->leadlogdays day) as servicereminderdate ,DATE_ADD('$request->contractfromdate', INTERVAL $serviceparameter->servicedays  day) as servicedate"));
-
-//             $supply = new SupplyManagementModel();
-//             $id = Uuid::uuid1();
-//             $supply->id = $id;
-//             $supply->contractno = $newcontractno;
-//             $supply->customercode = $this->checkifdataisempty($oldcontract->customercode);
-//             $supply->preventivemaintenancedate = $servicedate['servicedate'];
-//             $supply->preventivemaintenancereminderdate = $servicedate['servicereminderdate'];
-//             $supply->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//             $supply->created_by = $user->name;
-//             $supply->save();
-//         }
-//         #endregion
-
-//         #region Add Contract Details
-//         $oldcontractdetails = ContractDetailsModel::where('contractno', $request->contractno)->get();
-//         if ($oldcontractdetails != null) {
-//             for ($i = 0; $i < count($oldcontractdetails); $i++) {
-//                 $contractdetailsinsert = new ContractDetailsModel();
-//                 $contractdetailsinsert->id = Uuid::uuid1();
-//                 $contractdetailsinsert->contractno = $newcontractno;
-//                 $contractdetailsinsert->productservicecode = $oldcontractdetails[$i]->productservicecode;
-//                 $contractdetailsinsert->quantity = $oldcontractdetails[$i]->quantity;
-//                 $contractdetailsinsert->rate = $oldcontractdetails[$i]->rate;
-//                 $contractdetailsinsert->taxamt = $oldcontractdetails[$i]->taxamt;
-//                 $contractdetailsinsert->warranty_amcperiod = $oldcontractdetails[$i]->warranty_amcperiod;
-//                 $contractdetailsinsert->sgstrate = $oldcontractdetails[$i]->sgstrate;
-//                 $contractdetailsinsert->sgstamt = $oldcontractdetails[$i]->sgstamt;
-//                 $contractdetailsinsert->cgstrate = $oldcontractdetails[$i]->cgstrate;
-//                 $contractdetailsinsert->cgstamt = $oldcontractdetails[$i]->cgstamt;
-//                 $contractdetailsinsert->taxrate = $oldcontractdetails[$i]->taxrate;
-//                 $contractdetailsinsert->totaltax = $oldcontractdetails[$i]->totaltax;
-//                 $contractdetailsinsert->totalcontractcost = $oldcontractdetails[$i]->totalcontractcost;
-//                 $contractdetailsinsert->hsncode = $oldcontractdetails[$i]->hsncode;
-//                 $contractdetailsinsert->save();
-//             }
-//         }
-
-//         #endregion
-
-//         #region Add Contract Site Master
-
-//         $oldbranchdetails = BranchMasterModel::where('contractno', $request->contractno)->get();
-//         if ($oldbranchdetails != null) {
-//             for ($i = 0; $i < count($oldbranchdetails); $i++) {
-//                 $branchmaster = new BranchMasterModel();
-//                 $branchmaster->branchname = $oldbranchdetails[$i]->branchname;
-//                 $branchmaster->branchcode = $oldbranchdetails[$i]->branchcode;
-//                 $branchmaster->phone = $oldbranchdetails[$i]->phone;
-//                 $branchmaster->fax = $oldbranchdetails[$i]->fax;
-//                 $branchmaster->email = $oldbranchdetails[$i]->email;
-//                 $branchmaster->customercode = $oldbranchdetails[$i]->customercode;
-//                 $branchmaster->contractno = $newcontractno;
-//                 $branchmaster->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//                 $branchmaster->created_by = $user->name;
-//                 $branchmaster->updated_at = null;
-//                 $branchmaster->save();
-//             }
-//         }
-
-//         #endregion
-
-//         #region Add Contract Site Contact Master
-
-//         $oldbranchcontactdetails = BranchContactMasterModel::where('contractno', $request->contractno)->get();
-
-//         if ($oldbranchcontactdetails != null) {
-//             for ($i = 0; $i < count($oldbranchcontactdetails); $i++) {
-//                 $branchcontactmaster = new BranchContactMasterModel();
-//                 $branchcontactmaster->contactpersonname = $oldbranchcontactdetails[$i]->contactpersonname;
-//                 $branchcontactmaster->branchcontactcode = $oldbranchcontactdetails[$i]->branchcontactcode;
-//                 $branchcontactmaster->branchcode = $oldbranchcontactdetails[$i]->branchcode;
-//                 $branchcontactmaster->phone = $oldbranchcontactdetails[$i]->phone;
-//                 $branchcontactmaster->fax = $oldbranchcontactdetails[$i]->fax;
-//                 $branchcontactmaster->emailid = $oldbranchcontactdetails[$i]->emailid;
-//                 $branchcontactmaster->contractno = $newcontractno;
-//                 $branchcontactmaster->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//                 $branchcontactmaster->created_by = $user->name;
-//                 $branchcontactmaster->updated_at = null;
-//                 $branchcontactmaster->save();
-//             }
-//         }
-//         #endregion
-
-//         #region Add Equipment
-
-//         $oldequipmentdetails = EquipmentMasterModel::where('contractno', $request->contractno)->get();
-//         $count = count($oldequipmentdetails);
-//         $status = 'InActive';
-//         for($i = 0; $i < $count; $i++)
-//         {
-//             $data = EquipmentMasterModel::where('contractno',$oldequipmentdetails[$i]->contractno)
-//                 ->where('equipmentsrno',$oldequipmentdetails[$i]->equipmentsrno)
-//                 ->get()->first();
-//             $data->status = $status;
-//             $data->updated_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//             $data->update();
-//         }
-
-//         if ($oldequipmentdetails != null) {
-//             $status = 'Active';
-//             for ($i = 0; $i < $count; $i++) {
-//                 $equipmentmaster = new EquipmentMasterModel;
-//                 $equipmentmaster->customercode = $oldequipmentdetails[$i]->customercode;
-//                 $equipmentmaster->contractno = $newcontractno;
-//                 $equipmentmaster->contracttype = $oldequipmentdetails[$i]->contracttype;
-//                 $equipmentmaster->branchcode = $oldequipmentdetails[$i]->branchcode;
-//                 $equipmentmaster->productservicecode = $oldequipmentdetails[$i]->productservicecode;
-//                 $equipmentmaster->categorycode = $oldequipmentdetails[$i]->categorycode;
-//                 $equipmentmaster->equipmentsrno = $oldequipmentdetails[$i]->equipmentsrno;
-//                 $equipmentmaster->productsrno = $oldequipmentdetails[$i]->productsrno;
-//                 $equipmentmaster->specification = $oldequipmentdetails[$i]->specification;
-//                 $equipmentmaster->status = $status;
-//                 $equipmentmaster->flagkey = '0';
-//                 $equipmentmaster->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//                 $equipmentmaster->created_by = $user->name;
-//                 $equipmentmaster->updated_at = null;
-//                 $equipmentmaster->save();
-
-//             }
-//         }
-
-
-
-
-//         $oldContractDocs = ContractDocumentsModel::where('contractno', $request->contractno)
-//                     ->where('subtype', 'new_contract')
-//                     ->first();
-
-//         if ($oldContractDocs) {
-//             $amendDocs = new ContractDocumentsModel();
-//             $amendDocs->contractno = $newcontractno;
-//             $amendDocs->type = 'contract';
-//             $amendDocs->subtype = 'amend'; // For contract documents
-//             // Copy file paths (but files remain in old location? Or copy files?)
-//             $amendDocs->doc1 = $oldContractDocs->doc1;
-//             $amendDocs->doc2 = $oldContractDocs->doc2;
-//             $amendDocs->doc3 = $oldContractDocs->doc3;
-//             $amendDocs->created_by = $user->name;
-//             $amendDocs->created_at = Carbon::now();
-//             $amendDocs->save();
-            
-//             // For equipment documents
-//             $oldEquipmentDocs = ContractDocumentsModel::where('contractno', $request->contractno)
-//                                 ->where('subtype', 'equipment')
-//                                 ->first();
-            
-//             if ($oldEquipmentDocs) {
-//                 $amendEquipmentDocs = new ContractDocumentsModel();
-//                 $amendEquipmentDocs->contractno = $newcontractno;
-//                 $amendEquipmentDocs->type = 'contract';
-//                 $amendEquipmentDocs->subtype = 'amend_equipment';
-//                 $amendEquipmentDocs->doc1 = $oldEquipmentDocs->doc1;
-//                 $amendEquipmentDocs->created_by = $user->name;
-//                 $amendEquipmentDocs->created_at = Carbon::now();
-//                 $amendEquipmentDocs->save();
-//             }
-//         }
-// //        if( $equipmentmaster->save() == true)
-// //        {
-// //
-// //
-// //        }
-//         #endregion
-
-//         return redirect('contracts')->with('flash_message', 'Amendment Successfully Added. New Contract No is ' . $newcontractno);
-//     }
-
-
-
 
     public function amendcontractcreatenewcontract(Request $request, $contractno)
 {
@@ -2168,238 +1838,11 @@ class ContractController extends Controller
         }
     }
 
-    // ========== COMMENTED OUT - Amendment contracts start fresh without documents ==========
-    /*
-    $oldContractDocs = ContractDocumentsModel::where('contractno', $request->contractno)
-                ->where('subtype', 'new_contract')
-                ->first();
-
-    if ($oldContractDocs) {
-        $amendDocs = new ContractDocumentsModel();
-        $amendDocs->contractno = $newcontractno;
-        $amendDocs->type = 'contract';
-        $amendDocs->subtype = 'amend'; // For contract documents
-        // Copy file paths (but files remain in old location? Or copy files?)
-        $amendDocs->doc1 = $oldContractDocs->doc1;
-        $amendDocs->doc2 = $oldContractDocs->doc2;
-        $amendDocs->doc3 = $oldContractDocs->doc3;
-        $amendDocs->created_by = $user->name;
-        $amendDocs->created_at = Carbon::now();
-        $amendDocs->save();
-        
-        // For equipment documents
-        $oldEquipmentDocs = ContractDocumentsModel::where('contractno', $request->contractno)
-                            ->where('subtype', 'equipment')
-                            ->first();
-        
-        if ($oldEquipmentDocs) {
-            $amendEquipmentDocs = new ContractDocumentsModel();
-            $amendEquipmentDocs->contractno = $newcontractno;
-            $amendEquipmentDocs->type = 'contract';
-            $amendEquipmentDocs->subtype = 'amend_equipment';
-            $amendEquipmentDocs->doc1 = $oldEquipmentDocs->doc1;
-            $amendEquipmentDocs->created_by = $user->name;
-            $amendEquipmentDocs->created_at = Carbon::now();
-            $amendEquipmentDocs->save();
-        }
-    }
-    */
-    // ========== END OF COMMENTED OUT SECTION ==========
-
-    #endregion
-
+    
     return redirect('contracts')->with('flash_message', 'Amendment Successfully Added. New Contract No is ' . $newcontractno);
 }
 
 
-
-
-
-
-/**
- * Upload multiple documents at once
- */
-// public function uploadMultipleDocuments(Request $request)
-// {
-//     try {
-//         $user = auth()->user();
-//         $contractno = $request->contractno;
-//         $documents = $request->file('documents');
-        
-//         if (count($documents) > 3) {
-//             return response()->json([
-//                 'success' => false,
-//                 'message' => 'Maximum 3 documents allowed'
-//             ], 400);
-//         }
-        
-//         // Find or create record
-//         $contractDoc = ContractDocumentsModel::firstOrNew(['contractno' => $contractno]);
-        
-//         if (!$contractDoc->exists) {
-//             $contractDoc->type = 'contract';
-//             $contractDoc->subtype = 'new_contract';
-//             $contractDoc->created_by = $user->name;
-//             $contractDoc->created_at = Carbon::now();
-//         }
-        
-//         $uploadPath = 'contract_documents/' . $contractno;
-//         $docFields = ['doc1', 'doc2', 'doc3'];
-//         $uploadedCount = 0;
-        
-//         foreach ($documents as $index => $file) {
-//             if ($index < 3) {
-//                 $docField = $docFields[$index];
-                
-//                 // Delete old file if exists
-//                 if ($contractDoc->$docField && Storage::disk('public')->exists($contractDoc->$docField)) {
-//                     Storage::disk('public')->delete($contractDoc->$docField);
-//                 }
-                
-//                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-//                 $extension = $file->getClientOriginalExtension();
-//                 $safeName = preg_replace('/[^a-zA-Z0-9]/', '_', $originalName);
-//                 $filename = $docField . '_' . time() . '_' . $safeName . '.' . $extension;
-//                 $path = $file->storeAs($uploadPath, $filename, 'public');
-//                 $contractDoc->$docField = $path;
-//                 $uploadedCount++;
-//             }
-//         }
-        
-//         $contractDoc->updated_by = $user->name;
-//         $contractDoc->updated_at = Carbon::now();
-//         $contractDoc->save();
-        
-//         return response()->json([
-//             'success' => true,
-//             'message' => $uploadedCount . ' document(s) uploaded successfully'
-//         ]);
-        
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => $e->getMessage()
-//         ], 500);
-//     }
-// }
-
-
-// public function uploadMultipleDocuments(Request $request)
-// {
-//     try {
-//         $contractno = $request->contractno;
-
-//         $contractDoc = ContractDocumentsModel::where('contractno', $contractno)->first();
-
-//         if (!$contractDoc) {
-//             $contractDoc = new ContractDocumentsModel();
-//             $contractDoc->contractno = $contractno;
-//         }
-
-//         $files = $request->file('documents');
-
-//         foreach ($files as $file) {
-
-//             // $path = $file->store('contracts/'.$contractno, 'public');
-//             //$filename = $file->getClientOriginalName();
-//             $filename = time() . '_' . $file->getClientOriginalName();
-
-//             $path = $file->storeAs('contracts/'.$contractno, $filename, 'public');
-
-//             if (!$contractDoc->doc1) {
-//                 $contractDoc->doc1 = $path;
-//             } elseif (!$contractDoc->doc2) {
-//                 $contractDoc->doc2 = $path;
-//             } elseif (!$contractDoc->doc3) {
-//                 $contractDoc->doc3 = $path;
-//             } else {
-//                 return response()->json([
-//                     'success' => false,
-//                     'message' => 'Max 3 files already uploaded'
-//                 ]);
-//             }
-//         }
-
-//         $contractDoc->save();
-
-//         return response()->json([
-//             'success' => true,
-//             'message' => 'Documents uploaded successfully'
-//         ]);
-
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => $e->getMessage()
-//         ]);
-//     }
-// }
-
-
-
-
-// public function uploadMultipleDocuments(Request $request)
-// {
-//     try {
-//         $contractno = $request->contractno;
-//         $docField   = $request->doc_field; // 'doc1', 'doc2', 'doc3' or null for new upload
-
-//         $contractDoc = ContractDocumentsModel::where('contractno', $contractno)->first();
-
-//         if (!$contractDoc) {
-//             $contractDoc = new ContractDocumentsModel();
-//             $contractDoc->contractno = $contractno;
-//         }
-
-//         $files = $request->file('documents');
-
-//         foreach ($files as $index => $file) {
-//             $filename = time() . '_' . $file->getClientOriginalName();
-//             $path = $file->storeAs('contracts/' . $contractno, $filename, 'public');
-
-//             // If a specific doc_field is provided (i.e. user is replacing a specific file)
-//             if ($docField) {
-//                 // Delete old physical file first
-//                 if ($contractDoc->$docField && Storage::disk('public')->exists($contractDoc->$docField)) {
-//                     Storage::disk('public')->delete($contractDoc->$docField);
-//                 }
-//                 $contractDoc->$docField = $path;
-
-//             } else {
-//                 // New upload — find the next empty slot
-//                 if (!$contractDoc->doc1) {
-//                     $contractDoc->doc1 = $path;
-//                 } elseif (!$contractDoc->doc2) {
-//                     $contractDoc->doc2 = $path;
-//                 } elseif (!$contractDoc->doc3) {
-//                     $contractDoc->doc3 = $path;
-//                 } else {
-//                     return response()->json([
-//                         'success' => false,
-//                         'message' => 'Max 3 files already uploaded. Please delete one first.'
-//                     ]);
-//                 }
-//             }
-//         }
-
-//         $contractDoc->save();
-
-//         // Return fresh data so frontend can update immediately
-//         $contractDoc->refresh();
-
-//         return response()->json([
-//             'success'   => true,
-//             'message'   => 'Documents uploaded successfully',
-//             'documents' => $contractDoc  // send back fresh doc data
-//         ]);
-
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => $e->getMessage()
-//         ]);
-//     }
-// }
 
 public function uploadMultipleDocuments(Request $request)
 {
@@ -2408,13 +1851,7 @@ public function uploadMultipleDocuments(Request $request)
         $docField = $request->doc_field;
         $subtype = $request->subtype; // NEW: 'new_contract' or 'amend'
 
-        // if ($subtype === 'amend') {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Cannot upload documents for amendment contracts. Amendment contracts start fresh without documents.'
-        //     ], 400);
-        // }
-
+        
         $contractDoc = ContractDocumentsModel::where('contractno', $contractno)
                         ->where('subtype', $subtype)
                         ->first();
@@ -2474,36 +1911,6 @@ public function uploadMultipleDocuments(Request $request)
     }
 }
 
-// public function viewContractDocument($contractno, $docField)
-// {
-//     $contractDoc = ContractDocumentsModel::where('contractno', $contractno)->first();
-    
-//     if ($contractDoc && $contractDoc->$docField) {
-//         $filePath = storage_path('app/public/' . $contractDoc->$docField);
-//         if (file_exists($filePath)) {
-//             $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-            
-//             // For images, display inline
-//             if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-//                 return response()->file($filePath);
-//             }
-            
-//             // For PDF, display inline
-//             if ($extension == 'pdf') {
-//                 return response()->file($filePath, [
-//                     'Content-Type' => 'application/pdf',
-//                     'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
-//                 ]);
-//             }
-            
-//             // For other files, force download
-//             return response()->download($filePath);
-//         }
-//     }
-    
-//     return redirect()->back()->with('error', 'File not found');
-// }
-
 
 public function viewContractDocument($contractno, $docField)
 {
@@ -2556,34 +1963,6 @@ public function downloadContractDocument($contractno, $docField)
     return redirect()->back()->with('error', 'File not found');
 }
 
-/**
- * Get contract documents via AJAX
- */
-// public function getContractDocuments($contractno)
-// {
-//     $documents = ContractDocumentsModel::where('contractno', $contractno)->first();
-    
-//     return response()->json([
-//         'success' => true,
-//         'documents' => $documents
-//     ]);
-// }
-
-// public function getContractDocuments($contractno)
-// {
-//     $documents = ContractDocumentsModel::where('contractno', $contractno)->first();
-    
-//     return response()->json([
-//         'success' => true,
-//         'documents' => $documents
-//     ])->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-//       ->header('Pragma', 'no-cache')
-//       ->header('Expires', '0');
-// }
-
-
-
-
 
 public function getContractDocuments($contractno)
 {
@@ -2603,46 +1982,6 @@ public function getContractDocuments($contractno)
     ]);
 }
 
-/**
- * Delete document
- */
-// public function deleteContractDocument(Request $request)
-// {
-//     try {
-//         $contractno = $request->contractno;
-//         $docField = $request->doc_field;
-        
-//         $contractDoc = ContractDocumentsModel::where('contractno', $contractno)->first();
-        
-//         if ($contractDoc && $contractDoc->$docField) {
-//             // Delete physical file
-//             if (Storage::disk('public')->exists($contractDoc->$docField)) {
-//                 Storage::disk('public')->delete($contractDoc->$docField);
-//             }
-            
-//             // Remove from database
-//             $contractDoc->$docField = null;
-//             $contractDoc->save();
-            
-//             return response()->json([
-//                 'success' => true,
-//                 'message' => 'Document deleted successfully'
-//             ]);
-//         }
-        
-//         return response()->json([
-            
-//             'success' => false,
-//             'message' => 'Document not found'
-//         ], 404);
-        
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => $e->getMessage()
-//         ], 500);
-//     }
-// }
 
 public function deleteContractDocument(Request $request) 
 {
@@ -2680,69 +2019,12 @@ public function deleteContractDocument(Request $request)
     }
 }
 
-
-
-
-
-// public function uploadEquipmentDocument(Request $request)
-// {
-//     try {
-//         $contractno = $request->contractno;
-//         $file = $request->file('document');
-
-//         // Find or create record with subtype = 'equipment'
-//         $contractDoc = ContractDocumentsModel::where('contractno', $contractno)
-//                         ->where('subtype', 'equipment')
-//                         ->first();
-
-//         if (!$contractDoc) {
-//             $contractDoc = new ContractDocumentsModel();
-//             $contractDoc->contractno = $contractno;
-//             $contractDoc->type = 'contract';
-//             $contractDoc->subtype = 'equipment';
-//             $contractDoc->created_by = auth()->user()->name;
-//             $contractDoc->created_at = Carbon::now();
-//         }
-
-//         // Delete old file if exists
-//         if ($contractDoc->doc1 && Storage::disk('public')->exists($contractDoc->doc1)) {
-//             Storage::disk('public')->delete($contractDoc->doc1);
-//         }
-
-//         $filename = time() . '_' . $file->getClientOriginalName();
-//         $path = $file->storeAs('contracts/' . $contractno . '/equipment', $filename, 'public');
-
-//         $contractDoc->doc1 = $path;
-//         $contractDoc->updated_by = auth()->user()->name;
-//         $contractDoc->updated_at = Carbon::now();
-//         $contractDoc->save();
-
-//         return response()->json([
-//             'success'  => true,
-//             'message'  => 'Equipment document uploaded successfully.',
-//             'document' => $contractDoc
-//         ]);
-
-//     } catch (\Exception $e) {
-//         return response()->json(['success' => false, 'message' => $e->getMessage()]);
-//     }
-// }
-
-
-
 public function uploadEquipmentDocument(Request $request)
 {
     try {
         $contractno = $request->contractno;
         $file = $request->file('document');
         $subtype = $request->subtype; // NEW: 'equipment' or 'amend_equipment'
-
-        // if ($subtype === 'amend_equipment') {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Cannot upload equipment documents for amendment contracts. Amendment contracts start fresh without documents.'
-        //     ], 400);
-        // }
 
         // Find or create record with specific subtype
         $contractDoc = ContractDocumentsModel::where('contractno', $contractno)
@@ -2782,15 +2064,7 @@ public function uploadEquipmentDocument(Request $request)
     }
 }
 
-// public function getEquipmentDocument($contractno)
-// {
-//     $document = ContractDocumentsModel::where('contractno', $contractno)
-//                     ->where('subtype', 'equipment')
-//                     ->first();
 
-//     return response()->json(['success' => true, 'document' => $document])
-//         ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
-// }
 
 public function getEquipmentDocument($contractno)
 {
@@ -2806,32 +2080,6 @@ public function getEquipmentDocument($contractno)
     return response()->json(['success' => true, 'document' => $documents])
         ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
 }
-
-// public function viewEquipmentDocument($contractno)
-// {
-//     $doc = ContractDocumentsModel::where('contractno', $contractno)
-//                ->where('subtype', 'equipment')->first();
-    
-
-//     if ($doc && $doc->doc1) {
-//         $filePath = storage_path('app/public/' . $doc->doc1);
-//         if (file_exists($filePath)) {
-//             $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-//             if (in_array($extension, ['jpg','jpeg','png'])) {
-//                 return response()->file($filePath);
-//             }
-//             if ($extension === 'pdf') {
-//                 return response()->file($filePath, [
-//                     'Content-Type' => 'application/pdf',
-//                     'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
-//                 ]);
-//             }
-//             // Excel or others - force download
-//             return response()->download($filePath);
-//         }
-//     }
-//     return redirect()->back()->with('error', 'File not found.');
-// }
 
 
 public function viewEquipmentDocument($contractno)
@@ -2867,21 +2115,6 @@ public function viewEquipmentDocument($contractno)
     return redirect()->back()->with('error', 'File not found.');
 }
 
-// public function downloadEquipmentDocument($contractno)
-// {
-//     $doc = ContractDocumentsModel::where('contractno', $contractno)
-//                ->where('subtype', 'equipment')->first();
-
-//     if ($doc && $doc->doc1) {
-//         $filePath = storage_path('app/public/' . $doc->doc1);
-//         if (file_exists($filePath)) {
-//             return response()->download($filePath);
-//         }
-//     }
-//     return redirect()->back()->with('error', 'File not found.');
-// }
-
-
 
 public function downloadEquipmentDocument($contractno)
 {
@@ -2905,31 +2138,6 @@ public function downloadEquipmentDocument($contractno)
     }
     return redirect()->back()->with('error', 'File not found.');
 }
-
-// public function deleteEquipmentDocument(Request $request)
-// {
-//     try {
-//         $contractno = $request->contractno;
-//         $doc = ContractDocumentsModel::where('contractno', $contractno)
-//                    ->where('subtype', 'equipment')->first();
-
-//         if ($doc && $doc->doc1) {
-//             if (Storage::disk('public')->exists($doc->doc1)) {
-//                 Storage::disk('public')->delete($doc->doc1);
-//             }
-//             $doc->doc1 = null;
-//             $doc->updated_at = Carbon::now();
-//             $doc->save();
-
-//             return response()->json(['success' => true, 'message' => 'Document deleted.']);
-//         }
-
-//         return response()->json(['success' => false, 'message' => 'Document not found.'], 404);
-
-//     } catch (\Exception $e) {
-//         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-//     }
-// }
 
 
 public function deleteEquipmentDocument(Request $request)
@@ -2965,78 +2173,6 @@ public function deleteEquipmentDocument(Request $request)
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
 }
-
-// public function addBillingDetails()
-// {
-//     try {
-//         $user = auth()->user();
-//         $contractno = $_GET['contractno'];
-
-//         $billing = ContractBillingModel::where('contractno', $contractno)->first();
-
-//         if ($billing == null) {
-//             $billing = new ContractBillingModel();
-//             $billing->contractno = $contractno;
-//             $billing->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//             $billing->created_by = $user->name;
-//         } else {
-//             $billing->updated_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//             $billing->updated_by = $user->name;
-//         }
-
-//         $billing->estimatedbillingdate = $this->checkifdataisempty($_GET['estimatedbillingdate']);
-//         $billing->actualbilldate = $this->checkifdataisempty($_GET['actualbilldate']);
-//         $billing->billnumber = $this->checkifdataisempty($_GET['billnumber']);
-//         $billing->actualbillamount = $this->checkifdataisempty($_GET['actualbillamount']);
-//         $billing->save();
-
-//         $billpaidamount = $_GET['billpaidamount'];
-//         $billpaymentdate = $_GET['billpaymentdate'];
-//         $count = count($billpaidamount);
-
-//         $totalpaid = 0;
-//         for ($i = 0; $i < $count; $i++) {
-//             $totalpaid += (float) $billpaidamount[$i];
-//         }
-
-//         if ($billing->actualbillamount != null && $totalpaid > (float) $billing->actualbillamount) {
-//             return json_encode(array(
-//                 'error' => 'Total paid amount (' . $totalpaid . ') exceeds Actual Bill Amount (' . $billing->actualbillamount . ')'
-//             ));
-//         }
-
-//         // delete old cycles, re-insert fresh — same pattern as your updatepaymenterms()
-//         BillingPaymentCyclesModel::where('contractno', $contractno)->delete();
-
-//         for ($i = 0; $i < $count; $i++) {
-//             if ($billpaidamount[$i] == '' && $billpaymentdate[$i] == '') {
-//                 continue;
-//             }
-//             $cycle = new BillingPaymentCyclesModel();
-//             $cycle->contractno = $contractno;
-//             $cycle->paymentcycleno = $i + 1;
-//             $cycle->billpaidamount = $this->checkifdataisempty($billpaidamount[$i]);
-//             $cycle->billpaymentdate = $this->checkifdataisempty($billpaymentdate[$i]);
-//             $cycle->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
-//             $cycle->created_by = $user->name;
-//             $cycle->save();
-//         }
-
-//         $cycleslist = BillingPaymentCyclesModel::where('contractno', $contractno)
-//             ->orderBy('paymentcycleno', 'asc')->get();
-
-//         return json_encode(array(
-//             'billing' => $billing,
-//             'cycleslist' => $cycleslist,
-//             'totalpaid' => $totalpaid,
-//             'contractno' => $contractno
-//         ));
-
-//     } catch (Exception $exception) {
-//         return json_encode($exception);
-//     }
-// }
-
 
 
 public function addBillingDetails()
@@ -3300,6 +2436,169 @@ public function deletePaymentDocument(Request $request)
     } catch (Exception $exception) {
         return response()->json(['success' => false, 'message' => $exception->getMessage()], 500);
     }
+}
+
+public function dashboardnew()
+{
+    $today = Carbon::today(new DateTimeZone('Asia/Kolkata'));
+
+    // ---------------- CONTRACT EXPIRY ----------------
+    $contracts = ContractMasterModel::selectRaw('tblcontractmaster.*, tblcustomermaster.customername')
+        ->leftjoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
+        ->get();
+
+    $expiring = collect();
+    $expired = collect();
+    $newContracts = collect();
+    $all = collect();
+
+    
+
+    foreach ($contracts as $c) {
+        $daysleft = null;
+        if ($c->contracttodate) {
+            $todate = Carbon::parse($c->contracttodate);
+            $daysleft = $todate->lt($today) ? -1 * $todate->diffInDays($today) : $today->diffInDays($todate);
+        }
+        $c->daysleft = $daysleft;
+        $c->category = $this->getWorkOrderCategory($c->workordertype);
+
+
+        if ($c->closuredate) {
+            $c->status = 'Closed';
+            $c->statuscolor = 'default';
+        } elseif ($daysleft === null) {
+            $c->status = 'No End Date';
+            $c->statuscolor = 'default';
+        } elseif ($daysleft < 0) {
+            $c->status = 'Expired';
+            $c->statuscolor = 'danger';
+        } elseif ($daysleft <= 5) {
+            $c->status = 'Critical';
+            $c->statuscolor = 'danger';
+        } elseif ($daysleft <= 15) {
+            $c->status = 'Urgent';
+            $c->statuscolor = 'warning';
+        } elseif ($daysleft <= 30) {
+            $c->status = 'Upcoming';
+            $c->statuscolor = 'info';
+        } else {
+            $c->status = 'Active';
+            $c->statuscolor = 'success';
+        }
+
+        $c->isnew = $c->created_at && Carbon::parse($c->created_at)->gte($today->copy()->subDays(7));
+
+        if (!$c->closuredate && $daysleft !== null && $daysleft >= 0 && $daysleft <= 30) {
+            $expiring->push($c);
+        }
+        if (!$c->closuredate && $daysleft !== null && $daysleft < 0) {
+            $expired->push($c);
+        }
+        if ($c->isnew) {
+            $newContracts->push($c);
+        }
+        $all->push($c);
+    }
+
+    $expiring = $expiring->sortBy('daysleft')->values();
+    $expired = $expired->sortBy('daysleft')->values();
+    $all = $all->sortBy('daysleft')->values();
+    $newContracts = $newContracts->sortByDesc('created_at')->values();
+
+    // ---------------- BILLING ALERTS ----------------
+    $cycles = BillingPaymentCyclesModel::selectRaw('tblbillingpaymentcycles.*, tblcontractmaster.customercode, tblcontractmaster.workordertype, tblcustomermaster.customername')
+        ->leftjoin('tblcontractmaster', 'tblcontractmaster.contractno', '=', 'tblbillingpaymentcycles.contractno')
+        ->leftjoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
+        ->get();
+
+    $billingalerts = collect();
+
+    foreach ($cycles as $b) {
+        $tags = [];
+        $color = 'success';
+        $rank = 99;
+
+        $estdate = $b->estimatedbillingdate ? Carbon::parse($b->estimatedbillingdate) : null;
+        $daystoestimated = null;
+
+        if ($estdate) {
+            $daystoestimated = $estdate->lt($today) ? -1 * $estdate->diffInDays($today) : $today->diffInDays($estdate);
+        }
+        $b->daystoestimated = $daystoestimated;
+        $b->category = $this->getWorkOrderCategory($b->workordertype); 
+
+        // 1) Bill not raised yet (actualbilldate null)
+        if (!$b->actualbilldate && $estdate) {
+            if ($daystoestimated < 0) {
+                $tags[] = 'Bill Overdue - Not Raised (' . abs($daystoestimated) . ' days late)';
+                $color = 'danger';
+                $rank = min($rank, 1);
+            } elseif ($daystoestimated <= 5) {
+                $tags[] = 'Bill Due in ' . $daystoestimated . ' day(s)';
+                $color = 'warning';
+                $rank = min($rank, 2);
+            }
+        }
+
+        // 2) Payment shortfall (paid less than billed)
+        $diff = null;
+        if ($b->billamount !== null && $b->billpaidamount !== null) {
+            $diff = round((float)$b->billamount - (float)$b->billpaidamount, 2);
+            if ($diff > 0) {
+                $tags[] = 'Short Paid by Rs.' . number_format($diff, 2);
+                $color = 'danger';
+                $rank = min($rank, 1);
+            }
+        }
+        $b->diffamount = $diff;
+
+        // 3) Payment received late vs estimated date
+        $latedays = null;
+        if ($b->billpaymentdate && $estdate) {
+            $paymentdate = Carbon::parse($b->billpaymentdate);
+            if ($paymentdate->gt($estdate)) {
+                $latedays = $estdate->diffInDays($paymentdate);
+                $tags[] = 'Paid Late by ' . $latedays . ' day(s)';
+                $color = ($color == 'danger') ? 'danger' : 'warning';
+                $rank = min($rank, 3);
+            }
+        }
+        $b->latedays = $latedays;
+
+        // 4) Bill was raised but payment never came in
+        if ($b->actualbilldate && !$b->billpaymentdate) {
+            $tags[] = 'Payment Not Received';
+            $color = 'danger';
+            $rank = min($rank, 1);
+        }
+
+        $b->billstatus = count($tags) ? implode(' | ', $tags) : 'OK';
+        $b->billstatuscolor = $color;
+        $b->urgencyrank = $rank;
+
+        $billingalerts->push($b);
+    }
+
+    $billingalerts = $billingalerts->sortBy('urgencyrank')->values();
+
+    return view('contract.dashboardnew', compact('expiring', 'expired', 'newContracts', 'all', 'billingalerts'));
+}
+
+public function getWorkOrderCategory($workordertype)
+{
+    $softwareTypes  = ['Software development', 'Software Maintenance'];
+    $hardwareTypes  = ['Hardware AMC', 'Hardware Warranty', 'Hardware Supply'];
+    $manpowerTypes  = ['Scanning', 'Data Entry', 'Manpower Supply'];
+
+    if (in_array($workordertype, $softwareTypes)) {
+        return 'software';
+    } elseif (in_array($workordertype, $hardwareTypes)) {
+        return 'hardware';
+    } elseif (in_array($workordertype, $manpowerTypes)) {
+        return 'manpower';
+    }
+    return 'other';
 }
 
 
