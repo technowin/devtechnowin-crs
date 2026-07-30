@@ -272,7 +272,9 @@
                             <tr><th>Contract No</th><th>Customer</th><th>Work Order Type</th><th>Contract To Date</th><th>Days Left</th><th>Status</th><th>Action</th></tr>
                         </thead>
                         <tbody>
-                        @forelse($expiring as $c)
+                        @foreach($expiring as $c)
+
+                        
                             <tr class="{{ $c->statuscolor }}" data-category="{{ $c->category }}">
                                 <td>{{ $c->contractno }}</td>
                                 <td>{{ $c->customername }}</td>
@@ -282,9 +284,7 @@
                                 <td><span class="label label-{{ $c->statuscolor }}">{{ $c->status }}</span></td>
                                 <td><a href="{{ url('editcontract/'.$c->contractno) }}" class="btn btn-xs btn-primary">Edit</a></td>
                             </tr>
-                        @empty
-                            <tr><td colspan="7" class="text-center text-muted">No contracts expiring in the next 30 days.</td></tr>
-                        @endforelse
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
