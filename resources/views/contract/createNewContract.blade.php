@@ -992,6 +992,7 @@
             <col style="width: 9%;">   <!-- Next Payment Reminder -->
             <col style="width: 9%;">   <!-- Bill Payment Date -->
             <col style="width: 9%;">   <!-- Bill Paid Amount -->
+            <col style="width: 9%;">   <!-- Remark (NEW) -->
             <col style="width: 6%;">   <!-- Difference -->
             <col style="width: 6%;">   <!-- Running Total -->
             <col style="width: 5%;">   <!-- Action -->
@@ -1006,6 +1007,7 @@
                 <th>Reminder</th>
                 <th>Payment Date</th>
                 <th>Received</th>
+                <th>Remark</th>
                 <th>Diff</th>
                 <th>Running</th>
                 <th>Action</th>
@@ -1605,6 +1607,7 @@ function addBillingCycleRow() {
         '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" max="2050-12-31"></td>' +
         '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" max="2050-12-31"></td>' +
         '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+        '<td><input type="text" name="remark[]" class="form-control form-control-sm" placeholder="Remark"></td>' +   
         '<td class="row-difference">0.00</td>' +
         '<td class="row-running-total">0.00</td>' +
         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
@@ -1690,6 +1693,8 @@ function loadBillingDetails(contractno) {
                         '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" value="' + (cycle.nextreminderdate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+                        '<td><input type="text" name="remark[]" class="form-control form-control-sm" value="' + (cycle.remark || '') + '" placeholder="Remark"></td>' +   
+
                         '<td class="row-difference">' + diff + '</td>' +
                         '<td class="row-running-total">0.00</td>' +
                         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +

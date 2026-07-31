@@ -2188,6 +2188,8 @@ public function addBillingDetails()
         $billpaidamount = isset($_GET['billpaidamount']) ? $_GET['billpaidamount'] : [];
         $billpaymentdate = isset($_GET['billpaymentdate']) ? $_GET['billpaymentdate'] : [];
         $nextreminderdate = isset($_GET['nextreminderdate']) ? $_GET['nextreminderdate'] : [];
+        $remark = isset($_GET['remark']) ? $_GET['remark'] : [];   // ADD THIS
+
 
         $count = count($billpaidamount);
 
@@ -2205,6 +2207,7 @@ public function addBillingDetails()
             $billamt = isset($billamount[$i]) ? $billamount[$i] : '';
             $estdate = isset($estimatedbillingdate[$i]) ? $estimatedbillingdate[$i] : '';
             $actdate = isset($actualbilldate[$i]) ? $actualbilldate[$i] : '';
+            $remarkval = isset($remark[$i]) ? $remark[$i] : '';
 
             if ($paid == '' && $paydate == '' && $billno == '' && $estdate == '' && $actdate == '') {
                 continue;
@@ -2220,6 +2223,7 @@ public function addBillingDetails()
             $cycle->billpaidamount = $this->checkifdataisempty($paid);
             $cycle->billpaymentdate = $this->checkifdataisempty($paydate);
             $cycle->nextreminderdate = isset($nextreminderdate[$i]) ? $this->checkifdataisempty($nextreminderdate[$i]) : null;
+            $cycle->remark = $this->checkifdataisempty($remarkval);
             $cycle->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
             $cycle->created_by = $user->name;
             $cycle->save();
