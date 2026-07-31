@@ -616,6 +616,10 @@
 
 
 
+
+
+
+
 <div class="tab-pane fade" role="tabpanel" id="billing-tab" style="margin-left: 250px;">
     <div class="container">
         <div class="panel panel-default">
@@ -623,64 +627,68 @@
                 <h3 class="panel-title">Billing Details</h3>
             </div>
             <div class="panel-body">
+                {{Form::open(array('action' => 'ContractController@addBillingDetails','method' => 'get', 'id' => 'billingDetailsForm'))}}
+                {{ Form::hidden('contractno', $editconract->contractno, array('id' => 'billingcontractid')) }}
 
                 <div class="row mt-1">
-                    <div class="col-sm-4">
-                        <label class="text-muted">Contract No.</label>
-                        <p style="font-size:15px; font-weight:600;">{{ $editconract->contractno }}</p>
+                    <label class="col-sm-1 col-form-label text-muted">Contract No.</label>
+                    <div class="col-sm-2">
+                        {{ Form::text('contractnodisplay', $editconract->contractno, array('class' => 'form-control form-control-sm','readonly')) }}
                     </div>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-sm-4">
-                        <label class="text-muted">Total Contract Amount</label>
-                        <!-- <p id="totalcontractamountdisplay" style="font-size:16px; font-weight:600;">0.00</p> -->
-                        <p id="totalcontractamountdisplay" style="font-size:16px; font-weight:600;">{{ number_format($editconract->totalcost, 2) }}</p>
-
+                    <label class="col-sm-1 col-form-label text-muted">Total Amount</label>
+                    <div class="col-sm-2">
+                        
+                        <input type="text" class="form-control form-control-sm" id="totalcontractamountdisplay" readonly value="{{ $editconract->totalcost }}">
                     </div>
-                    <div class="col-sm-4">
-                        <label class="text-muted">Total Paid</label>
-                        <p id="totalpaidsofardisplay" style="font-size:16px; font-weight:600; color:#28a745;">0.00</p>
+                    <label class="col-sm-1 col-form-label text-muted">Total Received</label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control form-control-sm" id="totalpaidsofardisplay" readonly value="0.00">
                     </div>
-                    <div class="col-sm-4">
-                        <label class="text-muted">Remaining</label>
-                        <p id="totalremainingdisplay" style="font-size:16px; font-weight:600; color:#dc3545;">0.00</p>
+                    <label class="col-sm-1 col-form-label text-muted">Remaining</label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control form-control-sm" id="totalremainingdisplay" readonly value="0.00">
                     </div>
                 </div>
 
                 <br/>
                 <h4>Payment Cycles</h4>
-                <table class="table table-bordered">
+                <table class="table table-bordered" id="billingcyclestable">
                     <thead>
                         <tr>
                             <th width="6%">Cycle No</th>
-            <th width="10%">Estimated Billing Date</th>
-            <th width="10%">Actual Bill Date</th>
-            <th width="9%">Bill Number</th>
-            <th width="9%">Bill Amount</th>
-            <th width="10%">Next Payment Reminder</th>
-            <th width="10%">Bill Payment Date</th>
-            <th width="9%">Bill Paid Amount</th>
-            <th width="9%">Difference</th>
-            <th width="9%">Running Total</th>
+                            <th width="10%">Estimated Billing Date</th>
+                            <th width="10%">Actual Bill Date</th>
+                            <th width="9%">Bill Number</th>
+                            <th width="9%">Bill Amount</th>
+                            <th width="10%">Next Payment Reminder</th>
+                            <th width="10%">Bill Payment Date</th>
+                            <th width="9%">Bill Received Amount</th>
+                            <th width="9%">Difference</th>
+                            <th width="9%">Running Total</th>
+                            <th width="9%">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="billingcyclesviewbody">
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">Loading...</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="billingcyclesbody"></tbody>
                     <tfoot>
                         <tr>
                             <td colspan="4"><b>Total Paid</b></td>
                             <td><span id="totalpaidamount">0.00</span></td>
-                            <td colspan="3">
+                            <td colspan="4">
                                 <span id="billingmatchstatus" class="label label-warning">Remaining: 0.00</span>
                             </td>
                         </tr>
                     </tfoot>
                 </table>
 
+                <button type="button" class="btn btn-primary btn-sm" onclick="addBillingCycleRow();">+ Add Payment Cycle</button>
+
+                <br/><br/>
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3">
+                        {{ Form::submit('Save & Close', array('class' => 'btn btn-primary','id' => 'billingsubmitbtn')) }}
+                    </div>
+                </div>
+                {{ Form::close() }}
             </div>
         </div>
     </div>
@@ -1101,73 +1109,145 @@ $(document).ready(function () {
 
 
 <script type="text/javascript">
-function populateTotalContractAmountView() {
-    var totalCost = $('#totalcost').val() || $('input[name="totalcost"]').text() || {{ $totalcost ?? 0 }};
-    $('#totalcontractamountdisplay').text(parseFloat(totalCost).toFixed(2));
+
+
+function addBillingCycleRow() {
+    var newRow = '<tr class="billing-cycle-row">' +
+        '<td class="cycle-no"></td>' +
+        '<td><input type="date" name="estimatedbillingdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
+        '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
+        '<td><input type="text" name="billnumber[]" class="form-control form-control-sm"></td>' +
+        '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" onkeyup="calculateDifference(this);"></td>' +
+        '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
+        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
+        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+        '<td class="row-difference">0.00</td>' +
+        '<td class="row-running-total">0.00</td>' +
+        '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
+        '</tr>';
+    $('#billingcyclesbody').append(newRow);
+    renumberBillingRows();
+    validateBillTotal();
 }
 
-function loadBillingDetailsView(contractno) {
+function calculateDifference(el) {
+    var row = $(el).closest('tr');
+    var billAmt = parseFloat(row.find('.bill-amount').val()) || 0;
+    var paidAmt = parseFloat(row.find('.bill-paid-amount').val()) || 0;
+    row.find('.row-difference').text((billAmt - paidAmt).toFixed(2));
+}
+
+function removeBillingCycleRow(el) {
+    $(el).closest('tr').remove();
+    renumberBillingRows();
+    validateBillTotal();
+}
+
+function renumberBillingRows() {
+    $('#billingcyclesbody .billing-cycle-row').each(function (i) {
+        $(this).find('.cycle-no').text(i + 1);
+    });
+}
+
+function validateBillTotal() {
+    var totalContractAmount = parseFloat($('#totalcontractamountdisplay').val()) || 0;
+    var totalPaid = 0;
+
+    $('.billing-cycle-row').each(function () {
+        var paidVal = parseFloat($(this).find('.bill-paid-amount').val()) || 0;
+        totalPaid += paidVal;
+        $(this).find('.row-running-total').text(totalPaid.toFixed(2));
+    });
+
+    $('#totalpaidamount').text(totalPaid.toFixed(2));
+    $('#totalpaidsofardisplay').val(totalPaid.toFixed(2));
+
+    var remaining = totalContractAmount - totalPaid;
+    $('#totalremainingdisplay').val(remaining.toFixed(2));
+
+    if (totalContractAmount > 0 && remaining <= 0) {
+        $('#billingmatchstatus').removeClass('label-warning label-danger').addClass('label-success')
+            .text(remaining === 0 ? 'Fully Paid ✓' : 'Overpaid by ' + Math.abs(remaining).toFixed(2));
+    } else {
+        $('#billingmatchstatus').removeClass('label-success label-danger').addClass('label-warning')
+            .text('Remaining: ' + remaining.toFixed(2));
+    }
+}
+
+function loadBillingDetailsEditable(contractno) {
     $.ajax({
         url: '{{ url("getbillingdetails") }}/' + contractno,
         type: 'GET',
         dataType: 'json',
         success: function (data) {
-            $('#billingcyclesviewbody').empty();
-
-            var totalContractAmount = parseFloat($('#totalcontractamountdisplay').text()) || 0;
-            var totalPaid = 0;
-
+            $('#billingcyclesbody').empty();
             if (data.cycleslist && data.cycleslist.length > 0) {
-    $.each(data.cycleslist, function (i, cycle) {
-        var paid = parseFloat(cycle.billpaidamount) || 0;
-        var billAmt = parseFloat(cycle.billamount) || 0;
-        var diff = (billAmt - paid).toFixed(2);
-        totalPaid += paid;
+                $.each(data.cycleslist, function (i, cycle) {
+                    var billAmt = parseFloat(cycle.billamount) || 0;
+                    var paidAmt = parseFloat(cycle.billpaidamount) || 0;
+                    var diff = (billAmt - paidAmt).toFixed(2);
 
-        var row = '<tr>' +
-            '<td>' + (i + 1) + '</td>' +
-            '<td>' + (cycle.estimatedbillingdate || '-') + '</td>' +
-            '<td>' + (cycle.actualbilldate || '-') + '</td>' +
-            '<td>' + (cycle.billnumber || '-') + '</td>' +
-            '<td>' + (cycle.billamount ? billAmt.toFixed(2) : '-') + '</td>' +
-            '<td>' + (cycle.nextreminderdate || '-') + '</td>' +
-            '<td>' + (cycle.billpaymentdate || '-') + '</td>' +
-            '<td>' + (cycle.billpaidamount ? paid.toFixed(2) : '-') + '</td>' +
-            '<td>' + diff + '</td>' +
-            '<td>' + totalPaid.toFixed(2) + '</td>' +
-            '</tr>';
-        $('#billingcyclesviewbody').append(row);
-    });
-} else {
-    $('#billingcyclesviewbody').append('<tr><td colspan="10" class="text-center text-muted">No payment cycles recorded.</td></tr>');
-}
-
-            $('#totalpaidamount').text(totalPaid.toFixed(2));
-            $('#totalpaidsofardisplay').text(totalPaid.toFixed(2));
-
-            var remaining = totalContractAmount - totalPaid;
-            $('#totalremainingdisplay').text(remaining.toFixed(2));
-
-            if (totalContractAmount > 0 && remaining <= 0) {
-                $('#billingmatchstatus').removeClass('label-warning label-danger')
-                    .addClass('label-success')
-                    .text(remaining === 0 ? 'Fully Paid ✓' : 'Overpaid by ' + Math.abs(remaining).toFixed(2));
+                    var row = '<tr class="billing-cycle-row">' +
+                        '<td class="cycle-no"></td>' +
+                        '<td><input type="date" name="estimatedbillingdate[]" class="form-control form-control-sm" value="' + (cycle.estimatedbillingdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" value="' + (cycle.actualbilldate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="text" name="billnumber[]" class="form-control form-control-sm" value="' + (cycle.billnumber || '') + '"></td>' +
+                        '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" value="' + (cycle.billamount || '') + '" onkeyup="calculateDifference(this);"></td>' +
+                        '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm" value="' + (cycle.nextreminderdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
+                        '<td class="row-difference">' + diff + '</td>' +
+                        '<td class="row-running-total">0.00</td>' +
+                        '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
+                        '</tr>';
+                    $('#billingcyclesbody').append(row);
+                });
+                renumberBillingRows();
             } else {
-                $('#billingmatchstatus').removeClass('label-success label-danger')
-                    .addClass('label-warning')
-                    .text('Remaining: ' + remaining.toFixed(2));
+                addBillingCycleRow();
             }
+            validateBillTotal();
+        },
+        error: function () {
+            $('#billingcyclesbody').empty();
+            addBillingCycleRow();
         }
     });
 }
 
 $(document).ready(function () {
+    var contractno = '{{ $editconract->contractno }}';
+
     $('#billing-details').click(function () {
-        var contractno = '{{ $editconract->contractno }}';
-        populateTotalContractAmountView();
-        loadBillingDetailsView(contractno);
+        loadBillingDetailsEditable(contractno);
+    });
+
+    $("#billingDetailsForm").submit(function (e) {
+        e.preventDefault();
+        $("#billingsubmitbtn").attr("disabled", true);
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "{{URL::to('addbillingdetails')}}",
+            data: $("#billingDetailsForm").serialize(),
+            dataType: "json",
+            success: function (data) {
+                $("#billingsubmitbtn").attr("disabled", false);
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert('Billing details saved.');
+                    loadBillingDetailsEditable(contractno);
+                }
+            },
+            error: function () {
+                $("#billingsubmitbtn").attr("disabled", false);
+                alert('Something went wrong. Try Again.');
+            }
+        });
     });
 });
+
 </script>
 
 <script type="text/javascript">

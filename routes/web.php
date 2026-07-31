@@ -612,4 +612,7 @@ Route::post('delete-payment-document', 'ContractController@deletePaymentDocument
 
 Route::get('/contractsdashboard', 'ContractController@dashboardnew')->name('contracts.dashboardnew');
 
+Route::get('alert-settings', 'ContractController@alertSettings');
+Route::post('update-alert-settings', 'ContractController@updateAlertSettings');
+
 #endregion

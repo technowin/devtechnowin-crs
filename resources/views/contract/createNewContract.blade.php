@@ -969,7 +969,7 @@
                     <div class="col-sm-2">
                         <input type="text" class="form-control form-control-sm" id="totalcontractamountdisplay" readonly>
                     </div>
-                    <label class="col-sm-1 col-form-label text-muted">Total Paid</label>
+                    <label class="col-sm-1 col-form-label text-muted">Total Received</label>
                     <div class="col-sm-2">
                         <input type="text" class="form-control form-control-sm" id="totalpaidsofardisplay" readonly value="0.00">
                     </div>
@@ -1005,7 +1005,7 @@
                 <th>Amount</th>
                 <th>Reminder</th>
                 <th>Payment Date</th>
-                <th>Paid</th>
+                <th>Received</th>
                 <th>Diff</th>
                 <th>Running</th>
                 <th>Action</th>

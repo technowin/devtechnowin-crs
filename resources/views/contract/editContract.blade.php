@@ -1011,7 +1011,7 @@
                     <div class="col-sm-2">
                         <input type="text" class="form-control form-control-sm" id="totalcontractamountdisplay" readonly>
                     </div>
-                    <label class="col-sm-1 col-form-label text-muted">Total Paid</label>
+                    <label class="col-sm-1 col-form-label text-muted">Total Received</label>
                     <div class="col-sm-2">
                         <input type="text" class="form-control form-control-sm" id="totalpaidsofardisplay" readonly value="0.00">
                     </div>
@@ -1033,7 +1033,7 @@
                             <th width="9%">Bill Amount</th>
                             <th width="10%">Next Payment Reminder</th>
                             <th width="10%">Bill Payment Date</th>
-                            <th width="9%">Bill Paid Amount</th>
+                            <th width="9%">Bill Received Amount</th>
                             <th width="9%">Difference</th>
                             <th width="9%">Running Total</th>
                             <th width="9%">Action</th>
@@ -1044,7 +1044,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4"><b>Total Paid</b></td>
+                            <td colspan="4"><b>Total Received</b></td>
                             <td><span id="totalpaidamount">0.00</span></td>
                             <td colspan="4">
                                 <span id="billingmatchstatus" class="label label-warning">Remaining: 0.00</span>

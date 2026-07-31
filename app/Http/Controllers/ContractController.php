@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\Storage;
 
 
 use App\Models\PaymentDetailsNewModel;
-
+use App\Models\DashboardAlertConfigModel; 
 
 class ContractController extends Controller
 {
@@ -2442,6 +2442,13 @@ public function dashboardnew()
 {
     $today = Carbon::today(new DateTimeZone('Asia/Kolkata'));
 
+    $alertconfig        = DashboardAlertConfigModel::getAll();
+    $expiringSoonDays   = $alertconfig['expiring_soon_days']    ?? 30;
+    $criticalDays       = $alertconfig['critical_days']         ?? 5;
+    $urgentDays         = $alertconfig['urgent_days']           ?? 15;
+    $newContractDays    = $alertconfig['new_contract_days']     ?? 7;
+    $billingDueSoonDays = $alertconfig['billing_due_soon_days'] ?? 5;
+
     // ---------------- CONTRACT EXPIRY ----------------
     $contracts = ContractMasterModel::selectRaw('tblcontractmaster.*, tblcustomermaster.customername')
         ->leftjoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
@@ -2473,23 +2480,26 @@ public function dashboardnew()
         } elseif ($daysleft < 0) {
             $c->status = 'Expired';
             $c->statuscolor = 'danger';
-        } elseif ($daysleft <= 5) {
+        
+        } elseif ($daysleft <= $criticalDays) {
             $c->status = 'Critical';
             $c->statuscolor = 'danger';
-        } elseif ($daysleft <= 15) {
+        } elseif ($daysleft <= $urgentDays) {
             $c->status = 'Urgent';
             $c->statuscolor = 'warning';
-        } elseif ($daysleft <= 30) {
+        } elseif ($daysleft <= $expiringSoonDays) {
             $c->status = 'Upcoming';
             $c->statuscolor = 'info';
-        } else {
+        }
+        
+        else {
             $c->status = 'Active';
             $c->statuscolor = 'success';
         }
 
-        $c->isnew = $c->created_at && Carbon::parse($c->created_at)->gte($today->copy()->subDays(7));
+        $c->isnew = $c->created_at && Carbon::parse($c->created_at)->gte($today->copy()->subDays($newContractDays));
 
-        if (!$c->closuredate && $daysleft !== null && $daysleft >= 0 && $daysleft <= 30) {
+        if (!$c->closuredate && $daysleft !== null && $daysleft >= 0 && $daysleft <= $expiringSoonDays) {
             $expiring->push($c);
         }
         if (!$c->closuredate && $daysleft !== null && $daysleft < 0) {
@@ -2534,7 +2544,7 @@ public function dashboardnew()
                 $tags[] = 'Bill Overdue - Not Raised (' . abs($daystoestimated) . ' days late)';
                 $color = 'danger';
                 $rank = min($rank, 1);
-            } elseif ($daystoestimated <= 5) {
+            } elseif ($daystoestimated <= $billingDueSoonDays) {
                 $tags[] = 'Bill Due in ' . $daystoestimated . ' day(s)';
                 $color = 'warning';
                 $rank = min($rank, 2);
@@ -2601,6 +2611,25 @@ public function getWorkOrderCategory($workordertype)
     return 'other';
 }
 
+public function alertSettings()
+{
+    $settings = DashboardAlertConfigModel::all();
+    return view('contract.alertSettings', compact('settings'));
+}
+
+public function updateAlertSettings(Request $request)
+{
+    foreach ($request->input('alertdays') as $id => $value) {
+        $setting = DashboardAlertConfigModel::find($id);
+        if ($setting) {
+            $setting->alertdays  = $value;
+            $setting->updated_by = auth()->user()->name;
+            $setting->updated_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
+            $setting->save();
+        }
+    }
+    return redirect()->back()->with('flash_message', 'Alert settings updated.');
+}
 
 // Option   Condition
 // view    Always shown
