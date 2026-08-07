@@ -686,7 +686,7 @@
                             <th width="7%">Bill Number</th>
                             <th width="7%">Bill Amount</th>
                             <th width="8%">Due Date </th> <!--  Next Payment Reminder -->
-                            <th width="8%">Bill Payment Date</th>
+                            <th width="8%">Bill Received Date</th>
                             <th width="7%">Bill Received Amount</th>
                             <th width="7%">TDS</th>
                             <th width="7%">Difference</th>
