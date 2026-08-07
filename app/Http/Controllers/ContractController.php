@@ -2188,14 +2188,16 @@ public function addBillingDetails()
         $billpaidamount = isset($_GET['billpaidamount']) ? $_GET['billpaidamount'] : [];
         $billpaymentdate = isset($_GET['billpaymentdate']) ? $_GET['billpaymentdate'] : [];
         $nextreminderdate = isset($_GET['nextreminderdate']) ? $_GET['nextreminderdate'] : [];
-        $remark = isset($_GET['remark']) ? $_GET['remark'] : [];   // ADD THIS
-
+        $remark = isset($_GET['remark']) ? $_GET['remark'] : [];
+        $tds = isset($_GET['tds']) ? $_GET['tds'] : []; // NEW
 
         $count = count($billpaidamount);
 
         $totalpaid = 0;
+        $totaltds = 0;
         for ($i = 0; $i < $count; $i++) {
-            $totalpaid += (float) $billpaidamount[$i];
+            $totalpaid += (float) ($billpaidamount[$i] ?? 0);
+            $totaltds  += (float) ($tds[$i] ?? 0);
         }
 
         BillingPaymentCyclesModel::where('contractno', $contractno)->delete();
@@ -2208,8 +2210,9 @@ public function addBillingDetails()
             $estdate = isset($estimatedbillingdate[$i]) ? $estimatedbillingdate[$i] : '';
             $actdate = isset($actualbilldate[$i]) ? $actualbilldate[$i] : '';
             $remarkval = isset($remark[$i]) ? $remark[$i] : '';
+            $tdsval = isset($tds[$i]) ? $tds[$i] : '';
 
-            if ($paid == '' && $paydate == '' && $billno == '' && $estdate == '' && $actdate == '') {
+            if ($paid == '' && $paydate == '' && $billno == '' && $estdate == '' && $actdate == '' && $tdsval == '') {
                 continue;
             }
 
@@ -2224,6 +2227,7 @@ public function addBillingDetails()
             $cycle->billpaymentdate = $this->checkifdataisempty($paydate);
             $cycle->nextreminderdate = isset($nextreminderdate[$i]) ? $this->checkifdataisempty($nextreminderdate[$i]) : null;
             $cycle->remark = $this->checkifdataisempty($remarkval);
+            $cycle->tds = $this->checkifdataisempty($tdsval); // NEW
             $cycle->created_at = Carbon::now(new DateTimeZone('Asia/Kolkata'));
             $cycle->created_by = $user->name;
             $cycle->save();
@@ -2235,6 +2239,7 @@ public function addBillingDetails()
         return json_encode(array(
             'cycleslist' => $cycleslist,
             'totalpaid' => $totalpaid,
+            'totaltds' => $totaltds,
             'contractno' => $contractno
         ));
 
@@ -2463,8 +2468,6 @@ public function dashboardnew()
     $newContracts = collect();
     $all = collect();
 
-    
-
     foreach ($contracts as $c) {
         $daysleft = null;
         if ($c->contracttodate) {
@@ -2473,7 +2476,6 @@ public function dashboardnew()
         }
         $c->daysleft = $daysleft;
         $c->category = $this->getWorkOrderCategory($c->workordertype);
-
 
         if ($c->closuredate) {
             $c->status = 'Closed';
@@ -2484,7 +2486,6 @@ public function dashboardnew()
         } elseif ($daysleft < 0) {
             $c->status = 'Expired';
             $c->statuscolor = 'danger';
-        
         } elseif ($daysleft <= $criticalDays) {
             $c->status = 'Critical';
             $c->statuscolor = 'danger';
@@ -2494,9 +2495,7 @@ public function dashboardnew()
         } elseif ($daysleft <= $expiringSoonDays) {
             $c->status = 'Upcoming';
             $c->statuscolor = 'info';
-        }
-        
-        else {
+        } else {
             $c->status = 'Active';
             $c->statuscolor = 'success';
         }
@@ -2520,7 +2519,7 @@ public function dashboardnew()
     $all = $all->sortBy('daysleft')->values();
     $newContracts = $newContracts->sortByDesc('created_at')->values();
 
-    // ---------------- BILLING ALERTS ----------------
+    // ---------------- BILLING ALERTS (existing, high-level) ----------------
     $cycles = BillingPaymentCyclesModel::selectRaw('tblbillingpaymentcycles.*, tblcontractmaster.customercode, tblcontractmaster.workordertype, tblcustomermaster.customername')
         ->leftjoin('tblcontractmaster', 'tblcontractmaster.contractno', '=', 'tblbillingpaymentcycles.contractno')
         ->leftjoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
@@ -2540,9 +2539,8 @@ public function dashboardnew()
             $daystoestimated = $estdate->lt($today) ? -1 * $estdate->diffInDays($today) : $today->diffInDays($estdate);
         }
         $b->daystoestimated = $daystoestimated;
-        $b->category = $this->getWorkOrderCategory($b->workordertype); 
+        $b->category = $this->getWorkOrderCategory($b->workordertype);
 
-        // 1) Bill not raised yet (actualbilldate null)
         if (!$b->actualbilldate && $estdate) {
             if ($daystoestimated < 0) {
                 $tags[] = 'Bill Overdue - Not Raised (' . abs($daystoestimated) . ' days late)';
@@ -2555,7 +2553,6 @@ public function dashboardnew()
             }
         }
 
-        // 2) Payment shortfall (paid less than billed)
         $diff = null;
         if ($b->billamount !== null && $b->billpaidamount !== null) {
             $diff = round((float)$b->billamount - (float)$b->billpaidamount, 2);
@@ -2567,7 +2564,6 @@ public function dashboardnew()
         }
         $b->diffamount = $diff;
 
-        // 3) Payment received late vs estimated date
         $latedays = null;
         if ($b->billpaymentdate && $estdate) {
             $paymentdate = Carbon::parse($b->billpaymentdate);
@@ -2580,7 +2576,6 @@ public function dashboardnew()
         }
         $b->latedays = $latedays;
 
-        // 4) Bill was raised but payment never came in
         if ($b->actualbilldate && !$b->billpaymentdate) {
             $tags[] = 'Payment Not Received';
             $color = 'danger';
@@ -2596,7 +2591,133 @@ public function dashboardnew()
 
     $billingalerts = $billingalerts->sortBy('urgencyrank')->values();
 
-    return view('contract.dashboardnew', compact('expiring', 'expired', 'newContracts', 'all', 'billingalerts'));
+    // ---------------- PAYMENT TRACKER (detailed, due-date driven) ----------------
+    // nextreminderdate = the actual payment due date (per your confirmation)
+    $reminderLeadDays = 2; // days before Estimated Billing Date to trigger "call to remind"
+
+    $paymenttracker = collect();
+
+    foreach ($cycles as $b) {
+        $tags = [];
+        $color = 'success';
+        $rank = 99;
+
+        $estdate = $b->estimatedbillingdate ? Carbon::parse($b->estimatedbillingdate) : null;
+        $actdate = $b->actualbilldate ? Carbon::parse($b->actualbilldate) : null;
+        $paiddate = $b->billpaymentdate ? Carbon::parse($b->billpaymentdate) : null;
+        $duedate = $b->nextreminderdate ? Carbon::parse($b->nextreminderdate) : null;
+
+        $tracker = new \stdClass();
+        $tracker->contractno = $b->contractno;
+        $tracker->customername = $b->customername;
+        $tracker->category = $this->getWorkOrderCategory($b->workordertype);
+        $tracker->paymentcycleno = $b->paymentcycleno;
+        $tracker->estimatedbillingdate = $b->estimatedbillingdate;
+        $tracker->actualbilldate = $b->actualbilldate;
+        $tracker->billnumber = $b->billnumber;
+        $tracker->billamount = $b->billamount;
+        $tracker->billpaidamount = $b->billpaidamount;
+        $tracker->tds = $b->tds;
+        $tracker->billpaymentdate = $b->billpaymentdate;
+        $tracker->nextreminderdate = $b->nextreminderdate;
+        $tracker->remark = $b->remark;
+        $tracker->billraisedelay = null;
+        $tracker->paymentoverdueby = null;
+        $tracker->paidlateby = null;
+        $tracker->needscall = false;   // phone icon
+        $tracker->duesoon = false;     // money icon (NEW)
+        $tracker->needsbell = false;   // bell icon (NEW)
+
+        $paid = (float) ($b->billpaidamount ?? 0);
+        $tds  = (float) ($b->tds ?? 0);
+        $totalReceived = $paid + $tds;
+        $billamt = (float) ($b->billamount ?? 0);
+        $outstanding = round($billamt - $totalReceived, 2);
+        $tracker->outstandingamount = $outstanding;
+        $isSettled = $billamt > 0 && $outstanding <= 0;
+
+        // 1) Bill not raised yet - call to remind before estimated billing date
+        if (!$actdate && $estdate) {
+            $daystoestimated = $estdate->lt($today) ? -1 * $estdate->diffInDays($today) : $today->diffInDays($estdate);
+            if ($daystoestimated < 0) {
+                $tags[] = 'Bill Not Raised - Overdue by ' . abs($daystoestimated) . ' day(s)';
+                $color = 'danger';
+                $rank = min($rank, 1);
+            } elseif ($daystoestimated <= $reminderLeadDays) {
+                $tags[] = 'Call Customer - Billing Due in ' . $daystoestimated . ' day(s)';
+                $color = 'warning';
+                $rank = min($rank, 2);
+                $tracker->needscall = true;
+            }
+        }
+
+        // 2) Bill raised late/early vs estimate
+        if ($actdate && $estdate) {
+            if ($actdate->gt($estdate)) {
+                $lateby = $estdate->diffInDays($actdate);
+                $tracker->billraisedelay = $lateby;
+                $tags[] = 'Bill Raised Late by ' . $lateby . ' day(s)';
+                $color = ($color == 'danger') ? 'danger' : 'warning';
+                $rank = min($rank, 3);
+            } elseif ($actdate->lt($estdate)) {
+                $tracker->billraisedelay = -1 * $actdate->diffInDays($estdate);
+            } else {
+                $tracker->billraisedelay = 0;
+            }
+        }
+
+        // 3) Payment overdue OR due soon - based on nextreminderdate (the actual due date)
+        if (!$paiddate && !$isSettled && $billamt > 0) {
+            if ($duedate) {
+                if ($duedate->lt($today)) {
+                    $overdueby = $duedate->diffInDays($today);
+                    $tracker->paymentoverdueby = $overdueby;
+                    $tags[] = 'Payment Overdue - ' . $overdueby . ' day(s) since due date';
+                    $color = 'danger';
+                    $rank = min($rank, 1);
+                    $tracker->needsbell = true;   // NEW - bell for actively overdue
+                } else {
+                    $daystodue = $today->diffInDays($duedate);
+                    if ($daystodue <= $reminderLeadDays) {
+                        $tags[] = 'Payment Due Soon - ' . $daystodue . ' day(s) left';
+                        $color = ($color == 'danger') ? 'danger' : 'warning';
+                        $rank = min($rank, 2);
+                        $tracker->duesoon = true;   // NEW - money icon for due soon
+                    }
+                }
+            } else {
+                $tags[] = 'No Due Date Set';
+                $color = ($color == 'danger') ? 'danger' : 'warning';
+                $rank = min($rank, 4);
+            }
+        }
+
+        // 4) Paid late - payment DID happen, but after the due date (applies even if fully paid)
+        if ($paiddate && $duedate && $paiddate->gt($duedate)) {
+            $lateby = $duedate->diffInDays($paiddate);
+            $tracker->paidlateby = $lateby;
+            $tags[] = 'Paid Late by ' . $lateby . ' day(s)';
+            $color = 'danger';
+            $rank = min($rank, 2);
+        }
+
+        // 5) Partial payment outstanding note
+        if ($outstanding > 0 && $totalReceived > 0) {
+            $tags[] = 'Partial Payment - Outstanding Rs.' . number_format($outstanding, 2);
+            $color = ($color == 'danger') ? 'danger' : 'warning';
+            $rank = min($rank, 2);
+        }
+
+        $tracker->status = count($tags) ? implode(' | ', $tags) : 'OK';
+        $tracker->statuscolor = $color;
+        $tracker->urgencyrank = $rank;
+
+        $paymenttracker->push($tracker);
+    }
+
+    $paymenttracker = $paymenttracker->sortBy('urgencyrank')->values();
+
+    return view('contract.dashboardnew', compact('expiring', 'expired', 'newContracts', 'all', 'billingalerts', 'paymenttracker'));
 }
 
 public function getWorkOrderCategory($workordertype)

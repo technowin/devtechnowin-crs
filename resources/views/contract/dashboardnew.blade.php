@@ -197,6 +197,66 @@
 }
 
 
+.call-phone-icon {
+    color: #e67e22;
+    margin-right: 6px;
+    display: inline-block;
+    vertical-align: middle;
+    animation: phonering 1s ease-in-out infinite;
+    transform-origin: top center;
+}
+
+
+
+
+.due-soon-icon {
+    color: #16a085;
+    margin-right: 6px;
+    display: inline-block;
+    vertical-align: middle;
+    animation: coinshake 1s ease-in-out infinite;
+    transform-origin: center center;
+}
+
+@keyframes coinshake {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-2px) rotate(-8deg); }
+    50% { transform: translateY(0) rotate(0deg); }
+    75% { transform: translateY(-2px) rotate(8deg); }
+}
+
+.row-overdue-bell {
+    color: #e74c3c;
+    margin-right: 6px;
+    display: inline-block;
+    vertical-align: middle;
+    animation: bellring 0.8s ease-in-out infinite;
+    transform-origin: top center;
+}
+
+
+
+
+
+
+
+@keyframes phonering {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(-15deg); }
+    30% { transform: rotate(12deg); }
+    45% { transform: rotate(-10deg); }
+    60% { transform: rotate(6deg); }
+    75% { transform: rotate(-3deg); }
+}
+
+#table-tracker th, #table-tracker td {
+    font-size: 12.5px;
+    white-space: nowrap;
+    padding: 6px 8px;
+}
+#table-tracker { min-width: 1400px; } /* forces horizontal scroll instead of wrapping/crushing columns */
+
+
 
     .category-filter-group .category-btn.active[data-category="software"] { color: #6f42c1; }
     .category-filter-group .category-btn.active[data-category="hardware"] { color: #e67e22; }
@@ -243,6 +303,25 @@
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
             </svg>
             <span class="critical-count-badge">{{ $criticalBillingCount }}</span>
+        @endif
+    </a>
+</li>
+
+
+
+
+@php
+    $criticalTrackerCount = $paymenttracker->where('statuscolor', 'danger')->count();
+@endphp
+
+<li role="presentation">
+    <a style="font-size:19px; !important;" href="#tracker-tab" data-toggle="tab">
+        Payment Tracker <span class="badge">{{ count($paymenttracker) }}</span>
+        @if($criticalTrackerCount > 0)
+            <svg class="billing-alert-bell" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 16 16" fill="currentColor" title="{{ $criticalTrackerCount }} critical follow-up(s)">
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+            </svg>
+            <span class="critical-count-badge">{{ $criticalTrackerCount }}</span>
         @endif
     </a>
 </li>
@@ -437,6 +516,98 @@
                         @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        {{-- PAYMENT TRACKER --}}
+        <div class="tab-pane fade" id="tracker-tab">
+            <div class="panel panel-default">
+                <div class="panel-body dashcard">
+
+                <div class="icon-legend" style="margin-bottom:10px; padding:8px 12px; background:#f8f9fb; border-radius:8px; font-size:12.5px; color:#5a6a7a;">
+                    <b>Icon Guide:</b>
+                    <span style="margin-left:10px;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="#e67e22" style="vertical-align:middle;"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/></svg>
+                        <b>Phone</b> = Bill not raised yet, billing date approaching
+                    </span>
+                    <span style="margin-left:14px;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="#16a085" style="vertical-align:middle;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 0-.5.5V8a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 0-1H8.5V4.5A.5.5 0 0 0 8 4z"/></svg>
+                        <b>Clock/Money</b> = Bill raised, payment due date approaching
+                    </span>
+                    <span style="margin-left:14px;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="#e74c3c" style="vertical-align:middle;"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/></svg>
+                        <b>Bell</b> = Payment overdue - due date already passed, still unpaid
+                    </span>
+                </div>
+
+                    <div class="btn-group category-filter-group" data-target-table="table-tracker">
+                        <button type="button" style="font-size:19px; !important;" class="btn btn-sm btn-default category-btn active" data-category="all">All</button>
+                        <button type="button" style="font-size:19px; !important;" class="btn btn-sm btn-default category-btn" data-category="software">Software</button>
+                        <button type="button" style="font-size:19px; !important;" class="btn btn-sm btn-default category-btn" data-category="hardware">Hardware</button>
+                        <button type="button" style="font-size:19px; !important;" class="btn btn-sm btn-default category-btn" data-category="manpower">Manpower</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-condensed" id="table-tracker">
+                        <thead>
+                            <tr>
+                                <th>Contract No</th><th>Customer</th><th>Cycle</th>
+                                <th>Est. Bill Date</th><th>Actual Bill Date</th><th>Raise Delay</th>
+                                <th>Due Date</th><th>Bill Amt</th><th>Paid</th><th>TDS</th>
+                                <th>Outstanding</th><th>Overdue</th><th>Paid Late</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($paymenttracker as $t)
+                            <tr class="{{ $t->statuscolor }}" data-category="{{ $t->category }}">
+                                <td>
+                                    @if($t->needsbell)
+                                        <svg class="row-overdue-bell" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" title="Payment overdue">
+                                            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+                                        </svg>
+                                    @endif
+                                    @if($t->needscall)
+                                        <svg class="call-phone-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" title="Call customer - billing due soon">
+                                            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/>
+                                        </svg>
+                                    @endif
+                                    @if($t->duesoon)
+                                        <svg class="due-soon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" title="Payment due soon">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M8 4a.5.5 0 0 0-.5.5V8a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 0-1H8.5V4.5A.5.5 0 0 0 8 4z"/>
+                                        </svg>
+                                    @endif
+                                    {{ $t->contractno }}
+                                </td>
+                                <td>{{ $t->customername }}</td>
+                                <td>{{ $t->paymentcycleno }}</td>
+                                <td>{{ $t->estimatedbillingdate ?? '—' }}</td>
+                                <td>{{ $t->actualbilldate ?? '—' }}</td>
+                                <td>
+                                    @if($t->billraisedelay === null) —
+                                    @elseif($t->billraisedelay > 0) {{ $t->billraisedelay }} day(s) late
+                                    @elseif($t->billraisedelay < 0) {{ abs($t->billraisedelay) }} day(s) early
+                                    @else On time
+                                    @endif
+                                </td>
+                                <td>{{ $t->nextreminderdate ?? '—' }}</td>
+                                <td>{{ $t->billamount ?? '—' }}</td>
+                                <td>{{ $t->billpaidamount ?? '—' }}</td>
+                                <td>{{ $t->tds ?? '—' }}</td>
+                                <td>{{ number_format($t->outstandingamount, 2) }}</td>
+                                <td>{{ $t->paymentoverdueby !== null ? $t->paymentoverdueby . ' day(s)' : '—' }}</td>
+                                <td>{{ $t->paidlateby !== null ? $t->paidlateby . ' day(s)' : '—' }}</td>
+                                <td><span class="label label-{{ $t->statuscolor }}">{{ $t->status }}</span></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="14" class="text-center text-muted">No billing cycles found.</td></tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                    </div>
                 </div>
             </div>
         </div>

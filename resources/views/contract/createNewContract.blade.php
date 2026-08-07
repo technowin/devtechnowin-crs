@@ -3,56 +3,28 @@
 @section('page-css')
     <link href="{{asset('css/tab-css.css')}}" rel="stylesheet">
     <style>
-/* Force table to respect colgroup widths */
 #billingcyclestable {
     table-layout: fixed !important;
     width: 100% !important;
     word-break: break-word;
 }
-
-/* Minimize cell padding and font size */
 #billingcyclestable th,
 #billingcyclestable td {
-    padding: 2px 1px !important;
-    font-size: 10px !important;
+    padding: 2px 3px !important;
+    font-size: 11px !important;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
-
-/* Force all inputs to shrink to fit the cell */
 #billingcyclestable input,
 #billingcyclestable select,
 #billingcyclestable button {
     width: 100% !important;
     max-width: 100% !important;
-    min-width: 0 !important;    /* key: remove default min-width */
+    min-width: 0 !important;
     box-sizing: border-box !important;
     padding: 1px 2px !important;
     height: 22px !important;
     font-size: 10px !important;
-    border: 1px solid #ccc;
-    background: #fff;
-}
-
-/* Remove button inside table */
-#billingcyclestable .btn-xs {
-    font-size: 9px !important;
-    padding: 0 4px !important;
-    height: 20px !important;
-}
-
-/* Ensure the responsive wrapper scrolls horizontally */
-#billing-tab .table-responsive {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-/* Optional: make the panel body have less padding */
-#billing-tab .panel-body {
-    padding: 10px;
 }
 </style>
 @stop
@@ -983,34 +955,21 @@
                 <h4>Payment Cycles</h4>
                 <div class="table-responsive">
     <table class="table table-bordered" id="billingcyclestable">
-        <colgroup>
-            <col style="width: 4%;">   <!-- Cycle No -->
-            <col style="width: 9%;">   <!-- Estimated Billing Date -->
-            <col style="width: 9%;">   <!-- Actual Bill Date -->
-            <col style="width: 7%;">   <!-- Bill Number -->
-            <col style="width: 9%;">   <!-- Bill Amount -->
-            <col style="width: 9%;">   <!-- Next Payment Reminder -->
-            <col style="width: 9%;">   <!-- Bill Payment Date -->
-            <col style="width: 9%;">   <!-- Bill Paid Amount -->
-            <col style="width: 9%;">   <!-- Remark (NEW) -->
-            <col style="width: 6%;">   <!-- Difference -->
-            <col style="width: 6%;">   <!-- Running Total -->
-            <col style="width: 5%;">   <!-- Action -->
-        </colgroup>
         <thead>
             <tr>
-                <th>Cycle</th>
-                <th>Est. Billing</th>
-                <th>Actual Bill</th>
-                <th>Bill No.</th>
-                <th>Amount</th>
-                <th>Reminder</th>
-                <th>Payment Date</th>
-                <th>Received</th>
-                <th>Remark</th>
-                <th>Diff</th>
-                <th>Running</th>
-                <th>Action</th>
+                <th width="5%">Cycle No</th>
+                <th width="8%">Estimated Billing Date</th>
+                <th width="8%">Actual Bill Date</th>
+                <th width="7%">Bill Number</th>
+                <th width="7%">Bill Amount</th>
+                <th width="8%">Due Date </th> <!--  Next Payment Reminder -->
+                <th width="8%">Bill Payment Date</th>
+                <th width="7%">Bill Received Amount</th>
+                <th width="7%">TDS</th>
+                <th width="7%">Difference</th>
+                <th width="7%">Remark</th>
+                <th width="7%">Running Total</th>
+                <th width="10%">Action</th>
             </tr>
         </thead>
         <tbody id="billingcyclesbody">
@@ -1018,7 +977,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4"><b>Total Paid</b></td>
+                <td colspan="4"><b>Total Received</b></td>
                 <td><span id="totalpaidamount">0.00</span></td>
                 <td colspan="4">
                     <span id="billingmatchstatus" class="label label-warning">Remaining: 0.00</span>
@@ -1027,7 +986,6 @@
         </tfoot>
     </table>
 </div>
-
                 <button type="button" class="btn btn-primary btn-sm" id="addcyclebtn" onclick="addBillingCycleRow();">+ Add Payment Cycle</button>
 
                 <br/><br/>
@@ -1604,11 +1562,12 @@ function addBillingCycleRow() {
         '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
         '<td><input type="text" name="billnumber[]" class="form-control form-control-sm"></td>' +
         '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" onkeyup="calculateDifference(this);"></td>' +
-        '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" max="2050-12-31"></td>' +
-        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" max="2050-12-31"></td>' +
+        '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
+        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm" max="2050-12-31"></td>' +
         '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
-        '<td><input type="text" name="remark[]" class="form-control form-control-sm" placeholder="Remark"></td>' +   
+        '<td><input type="text" name="tds[]" class="form-control form-control-sm bill-tds" onkeyup="validateBillTotal();"></td>' +
         '<td class="row-difference">0.00</td>' +
+        '<td><input type="text" name="remark[]" class="form-control form-control-sm" placeholder="Remark"></td>' +
         '<td class="row-running-total">0.00</td>' +
         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
         '</tr>';
@@ -1647,17 +1606,22 @@ function populateTotalContractAmount() {
 function validateBillTotal() {
     var totalContractAmount = parseFloat($('#totalcontractamountdisplay').val()) || 0;
     var totalPaid = 0;
+    var totalTds = 0;
 
     $('.billing-cycle-row').each(function () {
         var paidVal = parseFloat($(this).find('.bill-paid-amount').val()) || 0;
+        var tdsVal = parseFloat($(this).find('.bill-tds').val()) || 0;
         totalPaid += paidVal;
-        $(this).find('.row-running-total').text(totalPaid.toFixed(2));
+        totalTds += tdsVal;
+        $(this).find('.row-running-total').text((totalPaid + totalTds).toFixed(2));
     });
 
-    $('#totalpaidamount').text(totalPaid.toFixed(2));
-    $('#totalpaidsofardisplay').val(totalPaid.toFixed(2));
+    var totalReceived = totalPaid + totalTds;
 
-    var remaining = totalContractAmount - totalPaid;
+    $('#totalpaidamount').text(totalReceived.toFixed(2));
+    $('#totalpaidsofardisplay').val(totalReceived.toFixed(2));
+
+    var remaining = totalContractAmount - totalReceived;
     $('#totalremainingdisplay').val(remaining.toFixed(2));
 
     if (totalContractAmount > 0 && remaining <= 0) {
@@ -1671,7 +1635,7 @@ function validateBillTotal() {
     }
 }
 
-function loadBillingDetails(contractno) {
+function loadBillingDetails(contractno) {   // (view screen: loadBillingDetailsEditable)
     $.ajax({
         url: '{{ url("getbillingdetails") }}/' + contractno,
         type: 'GET',
@@ -1690,12 +1654,12 @@ function loadBillingDetails(contractno) {
                         '<td><input type="date" name="actualbilldate[]" class="form-control form-control-sm" value="' + (cycle.actualbilldate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="text" name="billnumber[]" class="form-control form-control-sm" value="' + (cycle.billnumber || '') + '"></td>' +
                         '<td><input type="text" name="billamount[]" class="form-control form-control-sm bill-amount" value="' + (cycle.billamount || '') + '" onkeyup="calculateDifference(this);"></td>' +
-                        '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm next-reminder-date" value="' + (cycle.nextreminderdate || '') + '" max="2050-12-31"></td>' +
-                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm bill-payment-date" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="date" name="nextreminderdate[]" class="form-control form-control-sm" value="' + (cycle.nextreminderdate || '') + '" max="2050-12-31"></td>' +
+                        '<td><input type="date" name="billpaymentdate[]" class="form-control form-control-sm" value="' + (cycle.billpaymentdate || '') + '" max="2050-12-31"></td>' +
                         '<td><input type="text" name="billpaidamount[]" class="form-control form-control-sm bill-paid-amount" value="' + (cycle.billpaidamount || '') + '" onkeyup="validateBillTotal(); calculateDifference(this);"></td>' +
-                        '<td><input type="text" name="remark[]" class="form-control form-control-sm" value="' + (cycle.remark || '') + '" placeholder="Remark"></td>' +   
-
+                        '<td><input type="text" name="tds[]" class="form-control form-control-sm bill-tds" value="' + (cycle.tds || '') + '" onkeyup="validateBillTotal();"></td>' +
                         '<td class="row-difference">' + diff + '</td>' +
+                        '<td><input type="text" name="remark[]" class="form-control form-control-sm" value="' + (cycle.remark || '') + '" placeholder="Remark"></td>' +
                         '<td class="row-running-total">0.00</td>' +
                         '<td><button type="button" class="btn btn-danger btn-xs" onclick="removeBillingCycleRow(this);">Remove</button></td>' +
                         '</tr>';
