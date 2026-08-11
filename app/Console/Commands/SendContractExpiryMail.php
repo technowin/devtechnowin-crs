@@ -42,8 +42,10 @@ class SendContractExpiryMail extends Command
     try {
         $common = new CommonController();
         $common->SendContractExpiryReminders();
-
         $this->info('Contract expiry reminder emails processed.');
+
+        $common->SendBillingPaymentReminders();
+        $this->info('Billing payment reminder emails processed.');
     } catch (\Exception $e) {
         $this->error('Message: ' . $e->getMessage());
         $this->error('File: ' . $e->getFile());

@@ -308,7 +308,7 @@ class CommonController extends Controller
 
     public function getWorkOrderCategoryCommon($workordertype)
 {
-    $softwareTypes = ['Software development', 'Software Maintenance'];
+    $softwareTypes = ['Software development', 'Software Maintenance & Suppport'];
     $hardwareTypes = ['Hardware AMC', 'Hardware Warranty', 'Hardware Supply'];
     $manpowerTypes = ['Scanning', 'Data Entry', 'Manpower Supply'];
 
@@ -321,215 +321,6 @@ class CommonController extends Controller
     }
     return 'other';
 }
-
-// public function SendContractExpiryReminders()
-// {
-//     $today = Carbon::now(new DateTimeZone('Asia/Kolkata'))->startOfDay();
-
-//     echo "1. Method Started\n";
-
-//     $alertconfig = DashboardAlertConfigModel::getAll();
-//     $criticalDays = $alertconfig['critical_days'] ?? 5;
-
-//     echo "2. Critical Days: " . $criticalDays . "\n";
-
-//     $targetDate = $today->copy()->addDays($criticalDays)->toDateString();
-
-//     echo "3. Target Date: " . $targetDate . "\n";
-
-//     $remindertype = 'expiry_critical';
-
-//     $contracts = ContractMasterModel::selectRaw('tblcontractmaster.*, tblcustomermaster.customername')
-//         ->leftJoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
-//         ->whereDate('contracttodate', $targetDate)
-//         ->whereNull('closuredate')
-//         ->get();
-
-//     echo "4. Contracts Found: " . $contracts->count() . "\n";
-
-//     foreach ($contracts as $contract) {
-
-//         echo "\n=============================\n";
-//         echo "Contract No : " . $contract->contractno . "\n";
-
-//         $alreadySent = DB::table('tblcontractreminderlog')
-//             ->where('contractno', $contract->contractno)
-//             ->where('remindertype', $remindertype)
-//             ->where('senddate', $today->toDateString())
-//             ->exists();
-
-//         echo "Already Sent : ";
-//         var_dump($alreadySent);
-
-//         if ($alreadySent) {
-//             echo "Skipping...\n";
-//             continue;
-//         }
-
-//         $toEmails = [];
-
-//         $projectEmail = trim($contract->projectownername ?? '');
-//         $billingEmail = trim($contract->billingownername ?? '');
-
-//         echo "Project Email : " . $projectEmail . "\n";
-//         echo "Billing Email : " . $billingEmail . "\n";
-
-//         if (!empty($projectEmail) && filter_var($projectEmail, FILTER_VALIDATE_EMAIL)) {
-//             $toEmails[] = $projectEmail;
-//         }
-
-//         if (!empty($billingEmail)
-//             && filter_var($billingEmail, FILTER_VALIDATE_EMAIL)
-//             && $billingEmail != $projectEmail) {
-
-//             $toEmails[] = $billingEmail;
-//         }
-
-//         echo "To Emails : ";
-//         print_r($toEmails);
-
-//         $category = $this->getWorkOrderCategoryCommon($contract->workordertype);
-
-//         if ($category == 'software') {
-//             $ccEmail = 'anjali@technowin.co.in';
-//         } elseif ($category == 'hardware' || $category == 'manpower') {
-//             $ccEmail = 'mahesf4v@gmail.com';
-//         } else {
-//             $ccEmail = null;
-//         }
-
-//         echo "CC Email : " . $ccEmail . "\n";
-
-// echo "Before Mail::send()\n";
-
-// try {
-
-//     Mail::raw('This is a test email.', function ($message) {
-
-//     echo "Inside Closure\n";
-
-//     echo "Setting TO...\n";
-//     $message->to('riya@technowin.co.in');
-
-//     echo "TO Done\n";
-
-//     echo "Setting FROM...\n";
-//     $message->from('technowinitinfra@gmail.com', 'Technowin IT Infra');
-
-//     echo "FROM Done\n";
-
-//     echo "Setting Subject...\n";
-//     $message->subject('Test Email');
-
-//     echo "Subject Done\n";
-// });
-
-//     dd("MAIL SENT");
-
-// } catch (\Exception $e) {
-
-//     dd(
-//         $e->getMessage(),
-//         $e->getFile(),
-//         $e->getLine()
-//     );
-// }
-
-//     } 
-//     echo "\nFinished\n";
-
-// }
-
-
-
-
-// public function SendContractExpiryReminders()
-// {
-//     $today = Carbon::now(new DateTimeZone('Asia/Kolkata'))->startOfDay();
-
-//     $alertconfig  = DashboardAlertConfigModel::getAll();
-//     $criticalDays = $alertconfig['critical_days'] ?? 5;
-
-//     $targetDate = $today->copy()->addDays($criticalDays)->toDateString();
-//     $remindertype = 'expiry_critical';
-
-//     $contracts = ContractMasterModel::selectRaw('tblcontractmaster.*, tblcustomermaster.customername')
-//         ->leftjoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
-//         ->whereDate('contracttodate', $targetDate)
-//         ->whereNull('closuredate')
-//         ->get();
-
-//     foreach ($contracts as $contract) {
-
-//         $alreadySent = DB::table('tblcontractreminderlog')
-//             ->where('contractno', $contract->contractno)
-//             ->where('remindertype', $remindertype)
-//             ->where('senddate', $today->toDateString())
-//             ->exists();
-
-//         if ($alreadySent) {
-//             continue;
-//         }
-
-//         $toEmails = [];
-
-//         $projectEmail = trim($contract->projectownername ?? '');
-//         $billingEmail = trim($contract->billingownername ?? '');
-
-//         // Only add if it's a properly formatted email
-//         if (!empty($projectEmail) && filter_var($projectEmail, FILTER_VALIDATE_EMAIL)) {
-//             $toEmails[] = $projectEmail;
-//         }
-
-//         if (!empty($billingEmail) && filter_var($billingEmail, FILTER_VALIDATE_EMAIL) && $billingEmail != $projectEmail) {
-//             $toEmails[] = $billingEmail;
-//         }
-
-//         if (empty($toEmails)) {
-//             continue; // no valid email found, skip this contract
-//         }
-
-//         $category = $this->getWorkOrderCategoryCommon($contract->workordertype);
-
-//         if ($category == 'software') {
-//             $ccEmail = 'anjali@technowin.co.in';
-//         } elseif ($category == 'hardware' || $category == 'manpower') {
-//             $ccEmail = 'mahesf4v@gmail.com';
-//         } else {
-//             $ccEmail = null;
-//         }
-
-//         $data = [
-//             'contractno'    => $contract->contractno,
-//             'customername'  => $contract->customername,
-//             'expirydate'    => date("d-m-Y", strtotime($contract->contracttodate)),
-//             'daysremaining' => $criticalDays,
-//         ];
-
-//         try {
-//             Mail::send('emails.contractexpiry', $data, function ($message) use ($toEmails, $ccEmail) {
-//                 $message->to($toEmails);
-//                 if ($ccEmail) {
-//                     $message->cc($ccEmail);
-//                 }
-//                 $message->subject('Contract Expiry Reminder');
-//                 $message->from('technowinitinfra@gmail.com', 'Technowin IT Infra');
-//             });
-
-//             DB::table('tblcontractreminderlog')->insert([
-//                 'contractno'   => $contract->contractno,
-//                 'remindertype' => $remindertype,
-//                 'senddate'     => $today->toDateString(),
-//                 'created_at'   => Carbon::now(new DateTimeZone('Asia/Kolkata')),
-//             ]);
-
-//         } catch (Exception $ex) {
-//             $this->ErrorLogging($ex, 'CommonController', 'SendContractExpiryReminders');
-//             continue;
-//         }
-//     }
-// }
-
 
 
 
@@ -592,15 +383,12 @@ public function SendContractExpiryReminders()
                 'customername' => $contract->customername,
                 'expirydate' => date("d-m-Y", strtotime($contract->contracttodate)),
                 'daysremaining' => $daysThreshold,
-                'remindertype' => $reminderType, // Pass this to blade for conditional messaging
+                'remindertype' => $reminderType,
             ];
 
             try {
                 Mail::send('emails.contractexpiry', $data, function ($message) use ($toEmails, $ccEmail) {
                     $message->to($toEmails);
-                    // if ($ccEmail) {
-                    //     $message->cc($ccEmail);
-                    // }
                     $message->subject('Contract Expiry Reminder');
                     $message->from('technowinitinfra@gmail.com', 'Technowin IT Infra');
                 });
@@ -617,6 +405,155 @@ public function SendContractExpiryReminders()
                 continue;
             }
         }
+    }
+}
+
+public function SendBillingPaymentReminders()
+{
+    $today = Carbon::now(new DateTimeZone('Asia/Kolkata'))->startOfDay();
+    $alertconfig = DashboardAlertConfigModel::getAll();
+
+    $billingDueSoonDays  = $alertconfig['billing_due_soon_days'] ?? 2;
+    $billingOverdueDays  = $alertconfig['billing_overdue_days'] ?? 2;
+    $dueDateOverdue1Day  = $alertconfig['due_date_overdue_1day'] ?? 1;
+    $dueDateOverdue2Days = $alertconfig['due_date_overdue_2days'] ?? 2;
+    $dueDateOverdue5Days = $alertconfig['due_date_overdue_5days'] ?? 5;
+
+    $cycles = DB::table('tblbillingpaymentcycles')
+        ->selectRaw('tblbillingpaymentcycles.*, tblcontractmaster.customercode, tblcontractmaster.workordertype, tblcontractmaster.billingownername, tblcustomermaster.customername')
+        ->leftJoin('tblcontractmaster', 'tblcontractmaster.contractno', '=', 'tblbillingpaymentcycles.contractno')
+        ->leftJoin('tblcustomermaster', 'tblcustomermaster.customercode', '=', 'tblcontractmaster.customercode')
+        ->get();
+
+    foreach ($cycles as $cycle) {
+        $estDate = $cycle->estimatedbillingdate ? Carbon::parse($cycle->estimatedbillingdate, 'Asia/Kolkata')->startOfDay() : null;
+        $billPaymentDate = $cycle->billpaymentdate ? Carbon::parse($cycle->billpaymentdate, 'Asia/Kolkata')->startOfDay() : null;
+        $nextReminderDate = $cycle->nextreminderdate ? Carbon::parse($cycle->nextreminderdate, 'Asia/Kolkata')->startOfDay() : null;
+        $billingOwner = trim($cycle->billingownername ?? '');
+
+        if (!$estDate || empty($billingOwner) || !filter_var($billingOwner, FILTER_VALIDATE_EMAIL)) {
+            continue;
+        }
+
+        if ($billPaymentDate) {
+            continue;
+        }
+
+        // ===== Determine CC based on category, same rule as contract expiry =====
+        $category = $this->getWorkOrderCategoryCommon($cycle->workordertype);
+        $ccEmail = ($category == 'software') ? 'anjali@technowin.co.in' :
+                   (($category == 'hardware' || $category == 'manpower') ? 'mahesf4v@gmail.com' : null);
+
+        $daysFromEstimate = $estDate->diffInDays($today, false);
+
+        // N DAYS BEFORE ESTIMATED DATE
+        if ($daysFromEstimate == -$billingDueSoonDays) {
+            $this->sendBillingReminder($cycle, $estDate, $today, 'billing_due_soon', 'emails.billingduesoon', [
+                'contractno' => $cycle->contractno,
+                'customername' => $cycle->customername,
+                'paymentcycleno' => $cycle->paymentcycleno,
+                'billingduedate' => $estDate->format('d-m-Y'),
+                'billamount' => $cycle->billamount,
+            ], $billingOwner, 'Billing Due Soon - Payment Required', $ccEmail);
+        }
+
+        // ON THE ESTIMATED DATE ITSELF
+        if ($daysFromEstimate == 0) {
+            $this->sendBillingReminder($cycle, $estDate, $today, 'billing_due_today', 'emails.billingduesoon', [
+                'contractno' => $cycle->contractno,
+                'customername' => $cycle->customername,
+                'paymentcycleno' => $cycle->paymentcycleno,
+                'billingduedate' => $estDate->format('d-m-Y'),
+                'billamount' => $cycle->billamount,
+            ], $billingOwner, 'Billing Due Today - Payment Required', $ccEmail);
+        }
+
+        // N DAYS AFTER ESTIMATED DATE (still unpaid)
+        if ($daysFromEstimate == $billingOverdueDays) {
+            $this->sendBillingReminder($cycle, $estDate, $today, 'billing_overdue_' . $billingOverdueDays . 'days', 'emails.billingoverdue', [
+                'contractno' => $cycle->contractno,
+                'customername' => $cycle->customername,
+                'paymentcycleno' => $cycle->paymentcycleno,
+                'estimateddate' => $estDate->format('d-m-Y'),
+                'billamount' => $cycle->billamount,
+                'daysoverdue' => $daysFromEstimate,
+            ], $billingOwner, 'Payment Overdue - Immediate Action Required', $ccEmail);
+        }
+
+        // DUE DATE (nextreminderdate) ESCALATIONS
+        if ($nextReminderDate) {
+            $daysFromDueDate = $nextReminderDate->diffInDays($today, false);
+
+            if ($daysFromDueDate == $dueDateOverdue1Day) {
+                $this->sendBillingReminder($cycle, $nextReminderDate, $today, 'due_date_overdue_1day', 'emails.billingoverdue', [
+                    'contractno' => $cycle->contractno,
+                    'customername' => $cycle->customername,
+                    'paymentcycleno' => $cycle->paymentcycleno,
+                    'estimateddate' => $nextReminderDate->format('d-m-Y'),
+                    'billamount' => $cycle->billamount,
+                    'daysoverdue' => $daysFromDueDate,
+                ], $billingOwner, 'Due Date Passed - Payment Required', $ccEmail);
+            }
+
+            if ($daysFromDueDate == $dueDateOverdue2Days) {
+                $this->sendBillingReminder($cycle, $nextReminderDate, $today, 'due_date_overdue_2days', 'emails.billingoverdue', [
+                    'contractno' => $cycle->contractno,
+                    'customername' => $cycle->customername,
+                    'paymentcycleno' => $cycle->paymentcycleno,
+                    'estimateddate' => $nextReminderDate->format('d-m-Y'),
+                    'billamount' => $cycle->billamount,
+                    'daysoverdue' => $daysFromDueDate,
+                ], $billingOwner, 'Due Date Passed - Payment Required (2 Days)', $ccEmail);
+            }
+
+            if ($daysFromDueDate == $dueDateOverdue5Days) {
+                $this->sendBillingReminder($cycle, $nextReminderDate, $today, 'due_date_overdue_5days', 'emails.billingoverdue', [
+                    'contractno' => $cycle->contractno,
+                    'customername' => $cycle->customername,
+                    'paymentcycleno' => $cycle->paymentcycleno,
+                    'estimateddate' => $nextReminderDate->format('d-m-Y'),
+                    'billamount' => $cycle->billamount,
+                    'daysoverdue' => $daysFromDueDate,
+                ], $billingOwner, 'URGENT: Due Date Passed by 5 Days', $ccEmail);
+            }
+        }
+    }
+}
+/**
+ * Shared helper to avoid duplicating the "already sent?" + send + log block 6 times.
+ */
+private function sendBillingReminder($cycle, $refDate, $today, $reminderType, $view, $data, $to, $subject, $cc = null)
+{
+    $alreadySent = DB::table('tblcontractreminderlog')
+        ->where('contractno', $cycle->contractno)
+        ->where('remindertype', $reminderType)
+        ->where('paymentcycleno', $cycle->paymentcycleno)
+        ->where('senddate', $today->toDateString())
+        ->exists();
+
+    if ($alreadySent) {
+        return;
+    }
+
+    try {
+        Mail::send($view, $data, function ($message) use ($to, $cc, $subject) {
+            $message->to($to);
+            if ($cc) {
+                $message->cc($cc);
+            }
+            $message->subject($subject);
+            $message->from('technowinitinfra@gmail.com', 'Technowin IT Infra');
+        });
+
+        DB::table('tblcontractreminderlog')->insert([
+            'contractno' => $cycle->contractno,
+            'paymentcycleno' => $cycle->paymentcycleno,
+            'remindertype' => $reminderType,
+            'senddate' => $today->toDateString(),
+            'created_at' => Carbon::now(new DateTimeZone('Asia/Kolkata')),
+        ]);
+    } catch (Exception $ex) {
+        $this->ErrorLogging($ex, 'CommonController', 'SendBillingPaymentReminders/' . $reminderType);
     }
 }
 
