@@ -552,8 +552,9 @@ private function sendBillingReminder($cycle, $refDate, $today, $reminderType, $v
             'senddate' => $today->toDateString(),
             'created_at' => Carbon::now(new DateTimeZone('Asia/Kolkata')),
         ]);
-    } catch (Exception $ex) {
+        } catch (Exception $ex) {
         $this->ErrorLogging($ex, 'CommonController', 'SendBillingPaymentReminders/' . $reminderType);
+        echo $ex->getFile() . ':' . $ex->getLine() . "\n";
     }
 }
 
