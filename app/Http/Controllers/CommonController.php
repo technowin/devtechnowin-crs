@@ -536,6 +536,7 @@ private function sendBillingReminder($cycle, $refDate, $today, $reminderType, $v
     }
 
     try {
+        echo "TO: [" . $to . "] CC: [" . ($cc ?? 'none') . "]\n";
         Mail::send($view, $data, function ($message) use ($to, $cc, $subject) {
             $message->to($to);
             if ($cc) {
