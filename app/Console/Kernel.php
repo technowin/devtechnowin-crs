@@ -25,7 +25,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('contracts:send-expiry-reminders')->dailyAt('09:00');
-        $schedule->command('contracts:send-expiry-reminders')->dailyAt('13:30')->timezone('Asia/Kolkata');
+        // $schedule->command('contracts:send-expiry-reminders')->dailyAt('13:30')->timezone('Asia/Kolkata');
+
+        $schedule->command('contracts:send-expiry-reminders')->dailyAt('13:52')->timezone('Asia/Kolkata');
         // $schedule->command('inspire')
         //          ->hourly();
     }
