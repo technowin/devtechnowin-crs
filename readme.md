@@ -56,8 +56,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 git status
 git add .
 git commit -m "Add comment"
-git push origin master
+git push origin main
 
 #on putty to make it live
 cd /var/www/devtechnowin-crs
-git pull origin master
+git pull origin main
