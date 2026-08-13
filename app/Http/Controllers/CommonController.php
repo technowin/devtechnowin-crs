@@ -389,6 +389,9 @@ public function SendContractExpiryReminders()
             try {
                 Mail::send('emails.contractexpiry', $data, function ($message) use ($toEmails, $ccEmail) {
                     $message->to($toEmails);
+                    if ($ccEmail) {
+                        $message->cc($ccEmail);
+                    }
                     $message->subject('Contract Expiry Reminder');
                     $message->from('technowinitinfra@gmail.com', 'Technowin IT Infra');
                 });
